@@ -10,6 +10,14 @@
 
 using namespace std;
 
+// prototypes
+
+class Player;
+class Weapon;
+class Sprite;
+class Map;
+class Ray;
+class Hud;
 
 class Weapon
 {
@@ -241,6 +249,127 @@ void Ray::show()
 
 }
 
+class Hud 
+{
+public:
+    GLfloat bounds;
+    GLfloat height;
+
+    Hud(GLfloat bounds, GLfloat height) {
+        this->bounds = bounds;
+        this->height = height;
+    }
+    void show();
+    void displayDialogue(string dialogue, GLint maxLength, GLfloat offset);
+};
+
+void Hud::displayDialogue(string dialogue, GLint maxLength=60, GLfloat offset=3.5)
+{
+    glColor3ub(0, 0, 0);
+    for(int j = 0; j < (dialogue.length() / maxLength)+1; j++)
+    {
+        glRasterPos2f(1.5*bounds-offset*maxLength, ((bounds/2 - height / 2) - (j+1)*20));
+        for (int i = 0; i < maxLength; i++) 
+        {
+            if (dialogue[(j*maxLength)+i] == '\0')
+            {
+                break;
+            }
+
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, dialogue[(j*maxLength)+i]);
+        }
+    }
+
+}
+
+void Hud::show()
+{   
+    // crosshair
+    glLineWidth(2);
+    glBegin(GL_LINES);
+        glColor3f(0, 1, 0);
+        glVertex2f(1.5 * bounds - 10, bounds / 2);
+        glVertex2f(1.5 * bounds + 10, bounds / 2);
+        glColor3f(0, 1, 0);
+        glVertex2f(1.5 * bounds, bounds / 2 - 10);
+        glVertex2f(1.5 * bounds, bounds / 2 + 10);
+    glEnd();
+    glLineWidth(1);
+
+    //lower hud rectangle
+    glBegin(GL_QUADS);
+        glColor3ub(223, 54, 45);
+        glVertex2f(bounds, 0);
+        glVertex2f(bounds*2, 0);
+        glVertex2f(bounds*2, bounds/2 - height / 2);
+        glVertex2f(bounds, bounds/2 - height / 2);
+    glEnd();
+
+    // lower hud rectangle boundar
+    glLineWidth(4);
+    glBegin(GL_LINE_LOOP);
+        glColor3ub(0, 0, 0);
+        glVertex2f(bounds+2, 2);
+        glVertex2f(bounds*2 - 2, 2);
+        glVertex2f(bounds*2 - 2, bounds/2 - height / 2 - 2);
+        glVertex2f(bounds+2, bounds/2 - height / 2 - 2);
+    glEnd();
+    glLineWidth(1);
+}
+
+class Sprite
+{
+    public:
+    vector<GLfloat> pos;
+    GLint type;
+    GLint state;
+    GLfloat threshold;
+
+    Sprite() {}
+    Sprite(vector<GLfloat> pos, GLfloat threshold, GLint type)
+    {
+        this->pos = pos;
+        this->threshold = threshold;
+        this->state = 0;
+        this->type = 0;
+    }
+    void show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds);
+    void actions(Hud hud);
+};
+
+void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds)
+{
+    vector<GLfloat> relativePos{pos[0] - playerPos[0], pos[1] - playerPos[1]};
+    vector<GLfloat> dir{cos(playerAngle * PI/180), sin(playerAngle * PI / 180)};
+    GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
+    GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
+    //cout<<a<<", "<<b<<endl;
+    a = a / b + (3/2 * bounds);
+    b = pos[2] / b + bounds / 2;
+    glColor3f(1, 1, 0);
+    glPointSize(20);
+    glBegin(GL_POINTS);
+    glVertex2d(a, b);
+    glEnd();
+    glPointSize(1);
+
+    // draw sprite on minimap
+    glColor3f(1, 1, 0);
+    glPointSize(10);
+    glBegin(GL_POINTS);
+    glVertex2d(pos[0], pos[1]);
+    glEnd();
+    glPointSize(1);
+}
+
+void Sprite::actions(Hud hud)
+{
+    if (type == 0 && state)
+    {
+        hud.displayDialogue("Hello There! Didnt expect to make it out here alive.");
+    }
+}
+
 // Player
 class Player
 {
@@ -295,7 +424,17 @@ class Player
     void show();
     void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m);
     vector<vector<GLfloat>> see(Map m);
+    void proximity(vector<Sprite> spritesBuffer);
 };
+
+void Player::proximity(vector<Sprite> spritesBuffer) {
+    for (int i = 0; i < spritesBuffer.size(); i++) {
+        GLfloat dist = sqrt(pow(pos[0] - spritesBuffer[i].pos[0], 2) + pow(pos[1] - spritesBuffer[i].pos[1], 2));
+        spritesBuffer[i].state = (dist < spritesBuffer[i].threshold);
+        cout << dist << " " << spritesBuffer[i].state<< endl;
+    }
+}
+
 void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
 {
     if (keybuffer[' '])
@@ -333,7 +472,10 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
     int positive_y = m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
     int negative_x = m.walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
     int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
-    cout << int(pos[0] / 64) << " " << int(pos[1] / 64) << " +X " << m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)] << " +Y " << m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)] << " -X " << negative_x << " -Y " << negative_y << endl;
+    int quadrant_one = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] + offset[1])/64)];
+    int quadrant_two = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] + offset[1])/64)];
+    int quadrant_three = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] - offset[1])/64)];
+    int quadrant_four = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] - offset[1])/64)];
     float dx = 0, dy = 0;
 
     if (keybuffer['w'])
@@ -357,6 +499,8 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         dx =  speed * sin(angle  * (PI / 180));
         dy =  -speed * cos(angle  * (PI / 180));
 	}
+    // cout << dx << " " << dy << " +X " << positive_x << " +Y " << positive_y << " -X " << negative_x << " -Y " << negative_y;
+    // cout <<  " Q1: " << quadrant_one << " Q2: " << quadrant_two << " Q3: " << quadrant_three << " Q4: " << quadrant_four << endl;
     if((dx > 0 && positive_x == 0) || (dx < 0 && negative_x == 0))
     {
         pos[0] += dx;
@@ -435,41 +579,4 @@ vector<vector<GLfloat>> Player::see(Map m)
         distances[3].push_back(res[1]);
     }
     return distances;
-}
-
-class Sprite
-{
-    public:
-    vector<GLfloat> pos;
-    GLint type;
-    GLint state;
-    Sprite(vector<GLfloat> pos)
-    {
-        this->pos = pos;
-        this->state = 1;
-        this->type = 0;
-    }
-    void show(Player p, GLfloat bounds, GLfloat sliceWidth);
-};
-
-void Sprite::show(Player p, GLfloat bounds, GLfloat sliceWidth)
-{
-    if(state)
-    {
-        vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
-        vector<GLfloat> dir{cos(p.angle * PI/180), sin(p.angle * PI / 180)};
-        GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
-        GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
-        float g = 108;
-        a = g *a / b + (3/2 * bounds);
-        b = g * pos[2] / b + bounds / 2;
-        cout<<a<<", "<<b<<endl;
-        glColor3f(1, 1, 0);
-        glPointSize(20);
-        glBegin(GL_POINTS);
-        glVertex2d(a * sliceWidth, b * sliceWidth);
-        glEnd();
-        glPointSize(1);
-
-    }
 }

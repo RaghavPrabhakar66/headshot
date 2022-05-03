@@ -17,27 +17,28 @@ vector<vector<GLint>> walls{
 };
 Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
-Sprite s(vector<GLfloat>{100, 300, 20});
-vector<Sprite> sprites;
-GLfloat bounds = 512, sliceWidth = bounds / p.rayCount;
+Sprite s1(vector<GLfloat>{100, 300}, 30, 0);
+vector<Sprite> sprites {s1};
+GLfloat bounds = 512, sliceWidth = bounds / p.rayCount, maxHeight = 320;
 bool keybuffer[256] = {0};
 GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
+Hud hud(bounds, maxHeight);
 
 // 2.5D rendering
-void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_size=32)
+void drawScene(vector<vector<GLfloat>> d, GLint texture_size=32)
 {
     GLfloat sliceHeight, offset, shade;
     glColor3ub(51, 153, 255);
     glBegin(GL_QUADS);
     glVertex2f(bounds, bounds / 2);
-    glVertex2f(bounds, bounds / 2 + heightMax / 2);
-    glVertex2f(2 * bounds, bounds / 2 + heightMax / 2);
+    glVertex2f(bounds, bounds / 2 + maxHeight / 2);
+    glVertex2f(2 * bounds, bounds / 2 + maxHeight / 2);
     glVertex2f(2 * bounds, bounds / 2);
     glColor3ub(139, 71, 19);
     glBegin(GL_QUADS);
     glVertex2f(bounds, bounds / 2);
-    glVertex2f(bounds, bounds / 2 - heightMax / 2);
-    glVertex2f(2 * bounds, bounds / 2 - heightMax / 2);
+    glVertex2f(bounds, bounds / 2 - maxHeight / 2);
+    glVertex2f(2 * bounds, bounds / 2 - maxHeight / 2);
     glVertex2f(2 * bounds, bounds / 2);
     glEnd();
 
@@ -47,12 +48,12 @@ void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_s
     {
         GLfloat index =  d[0].size() - i - 1;
 
-        sliceHeight = m.blockSize * heightMax / (d[0][index] * cos((p.angle - p.rays[index].angle) * (PI / 180)));
+        sliceHeight = m.blockSize * maxHeight / (d[0][index] * cos((p.angle - p.rays[index].angle) * (PI / 180)));
         vector<GLfloat> t{0, 0}, texture_offset{0, 0}, texture_step{0, texture_size / (sliceHeight + 1)};
-        if(sliceHeight > heightMax)
+        if(sliceHeight > maxHeight)
         {
-            texture_offset[1] = (sliceHeight - heightMax) / 2;
-            sliceHeight = heightMax;
+            texture_offset[1] = (sliceHeight - maxHeight) / 2;
+            sliceHeight = maxHeight;
         }
 
         offset = bounds/2 - sliceHeight / 2;
@@ -92,23 +93,6 @@ void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_s
     glPointSize(1);
 }
 
-// HUD
-void HUD()
-{
-    // Crosshair
-    glLineWidth(2);
-    glBegin(GL_LINES);
-        glColor3f(0, 1, 0);
-        glVertex2f(1.5 * bounds - 10, bounds / 2);
-        glVertex2f(1.5 * bounds + 10, bounds / 2);
-        glColor3f(0, 1, 0);
-        glVertex2f(1.5 * bounds, bounds / 2 - 10);
-        glVertex2f(1.5 * bounds, bounds / 2 + 10);
-    glEnd();
-    glLineWidth(1);
-    p.weapon.show(bounds, 320);
-}
-
 // Event loop
 void display()
 {
@@ -118,8 +102,15 @@ void display()
     m.show();
     p.show();
     drawScene(p.see(m));
-    HUD();
-    s.show(p, bounds, sliceWidth);
+    hud.show();
+    for (int i=0; i<sprites.size(); i++)
+    {   
+        GLfloat dist = sqrt(pow(p.pos[0] - sprites[i].pos[0], 2) + pow(p.pos[1] - sprites[i].pos[1], 2));
+        sprites[i].state = (dist < sprites[i].threshold);
+        sprites[i].show(p.pos, p.angle, bounds);
+        sprites[i].actions(hud);
+    }
+    p.weapon.show(bounds, 320);
     glutSwapBuffers();
 }
 
