@@ -7,7 +7,7 @@
 // Game Objects
 vector<vector<GLint>> walls{
 {1, 1, 1, 1, 1, 1, 1, 1},
-{1, 0, 0, 1, 0, 0, 0, 1},
+{1, 0, 0, 0, 0, 0, 0, 1},
 {1, 0, 0, 1, 0, 0, 0, 1},
 {1, 1, 1, 1, 0, 0, 0, 1},
 {1, 0, 0, 0, 0, 0, 0, 1},
@@ -111,7 +111,7 @@ void HUD()
 // Event loop
 void display()
 {
-    p.actions(keybuffer, mousebuffer, bounds);
+    p.actions(keybuffer, mousebuffer, bounds, m);
     glClear(GL_COLOR_BUFFER_BIT);
 
     m.show();

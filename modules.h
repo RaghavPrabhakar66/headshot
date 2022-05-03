@@ -255,11 +255,9 @@ class Player
 	GLint rayCount;
     GLfloat step;
 	vector<Ray> rays;
-    vector<vector<GLint>> walls;
-    GLfloat temp;
 
     Player(){} //dummy constructor
-    Player(vector<GLfloat> pos, vector<GLfloat> offset, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle, vector<vector<GLint>> walls)
+    Player(vector<GLfloat> pos, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle)
     {
         weapons = vector<Weapon>{Weapon(0), Weapon(1)};
         weapon = weapons[0];
@@ -268,8 +266,6 @@ class Player
         this->speed = speed;
         this->rayCount = rayCount;
         this->FOV = FOV;
-        this->walls = walls;
-        this->offset = offset;
 
         if(rayCount > 1)
         {
@@ -297,14 +293,14 @@ class Player
         }
 	}
     void show();
-    void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds);
+    void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m);
     vector<vector<GLfloat>> see(Map m);
 };
-void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
+void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
 {
     if (keybuffer[' '])
     {
-        weapon.attack = true;;
+        weapon.attack = true;
     }
     if (keybuffer['1'])
     {
@@ -315,6 +311,7 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
         weapon = weapons[1];
     }
 
+    vector<GLfloat> offset(2);
     
     if ((sin(angle  * (PI / 180))) < 0)
     {
@@ -332,11 +329,11 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
     }
     // cout << "Right Wall: " << walls[int(abs((pos[0]+offset[0]) / 64))][int(abs(pos[1]/64))] << " Top Wall: " << walls[int(abs(pos[0]/64))][int(abs(pos[1]+offset[1]))/64] << " Left Wall: " << walls[int(abs((pos[0]-offset[0]) / 64))][int(abs(pos[1]/64))] << " Bottom Wall: " << walls[int(abs(pos[0]/64))][int(abs((pos[1]-offset[1])/64))] << " " << (pos[0]+offset[0]) / 64 << " " << (pos[1]+offset[1]) / 64 << endl;
 
-    int positive_x = walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
-    int positive_y = walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
-    int negative_x = walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
-    int negative_y = walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
-    cout << int(pos[0] / 64) << " " << int(pos[1] / 64) << " +X " << walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)] << " +Y " << walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)] << " -X " << negative_x << " -Y " << negative_y << endl;
+    int positive_x = m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
+    int positive_y = m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
+    int negative_x = m.walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
+    int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
+    cout << int(pos[0] / 64) << " " << int(pos[1] / 64) << " +X " << m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)] << " +Y " << m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)] << " -X " << negative_x << " -Y " << negative_y << endl;
     float dx = 0, dy = 0;
     
     if (keybuffer['w'])
