@@ -10,6 +10,59 @@
 
 using namespace std;
 
+
+class Weapon
+{
+    public:
+    GLint name;
+    bool attack;
+
+    Weapon(){}
+    Weapon(GLint name)
+    {
+        this->name = name;
+        this->attack = false;
+    }
+
+    void show(GLfloat bounds, GLfloat height);
+};
+
+void Weapon::show(GLfloat bounds, GLfloat height)
+{
+    if (name == 0)
+    {
+        if(attack)
+        {
+            glColor3f(0.8, 0.8, 0.8);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.5 * bounds, bounds / 2);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.6 * bounds, bounds / 2 - height / 2);
+            glEnd();
+        attack = false;
+        }
+        else
+        {
+            glColor3f(0.8, 0.8, 0.8);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.6 * bounds, bounds / 2);
+                glVertex2f(1.8 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+            glEnd();
+        }
+    }
+    if (name == 1)
+    {
+        glColor3f(0.8, 0.8, 0.8);
+        glBegin(GL_POLYGON);
+            glVertex2f(1.6 * bounds, bounds / 3);
+            glVertex2f(1.7 * bounds, bounds / 3);
+            glVertex2f(1.8 * bounds, bounds / 2 - height / 2);
+            glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+        glEnd();
+    }
+}
+
 //Map
 class Map
 {
@@ -195,7 +248,7 @@ class Player
 
 	vector<GLfloat> pos;
 	vector<Weapon> weapons;
-	GLint weapon;
+	Weapon weapon;
 	GLfloat speed;
 	GLfloat FOV;
 	GLfloat angle;
@@ -206,6 +259,9 @@ class Player
     Player(){} //dummy constructor
     Player(vector<GLfloat> pos, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle)
     {
+        weapons = vector<Weapon>{Weapon(0), Weapon(1)};
+        weapon = weapons[0];
+
         this->pos = pos;
         this->speed = speed;
         this->rayCount = rayCount;
@@ -241,6 +297,18 @@ class Player
 };
 void Player::actions(bool keybuffer[], vector<GLfloat> mousebuffer, GLfloat bounds)
 {
+    if (keybuffer[' '])
+    {
+        weapon.attack = true;;
+    }
+    if (keybuffer['1'])
+    {
+        weapon = weapons[0];
+    }
+    if (keybuffer['2'])
+    {
+        weapon = weapons[1];
+    }
     if (keybuffer['w'])
     {
         pos[0] += speed * cos(angle  * (3.14159 / 180));
@@ -330,8 +398,32 @@ vector<vector<GLfloat>> Player::see(Map m)
     return distances;
 }
 
-class lmao
+class Sprite
 {
     vector<GLfloat> pos;
-//    vector<GLfloat> ;
+    GLint type;
+    GLint state;
+    Sprite(vector<GLfloat> pos)
+    {
+        this->pos = pos;
+    }
+    void show(Player p, GLfloat bounds);
 };
+
+void Sprite::show(Player p, GLfloat bounds)
+{
+    if(state)
+    {
+        vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
+        vector<GLfloat> dir{cos(p.angle * PI/180), sin(p.angle * PI / 180)};
+        GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
+        GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
+        a = a / b + (3/2 * bounds);
+        b = b / pos[2] + bounds / 2;
+
+        glBegin(GLPOINTS)
+        glVertex2d(a, b);
+        glEnd();
+
+    }
+}

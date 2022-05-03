@@ -17,7 +17,7 @@ vector<vector<GLint>> walls{
 };
 Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
-
+Sprite s(vector<GLfloat>{100, 300});
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount;
 bool keybuffer[256] = {0};
 vector<GLfloat> mousebuffer{0, 0}, mouseLoc{bounds, bounds/2};
@@ -86,6 +86,7 @@ void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_s
         }
 
     }
+    s.show();
     glEnd();
     glPointSize(1);
 }
@@ -104,7 +105,7 @@ void HUD()
         glVertex2f(1.5 * bounds, bounds / 2 + 10);
     glEnd();
     glLineWidth(1);
-    p.weapon.show();
+    p.weapon.show(bounds, 320);
 }
 
 // Event loop
