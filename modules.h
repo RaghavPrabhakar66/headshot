@@ -194,8 +194,8 @@ class Player
     public:
 
 	vector<GLfloat> pos;
-	vector<Weapon> weapons;
-	GLint weapon;
+	// vector<Weapon> weapons;
+	// GLint weapon;
 	GLfloat speed;
 	GLfloat FOV;
 	GLfloat angle;

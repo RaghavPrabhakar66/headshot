@@ -104,7 +104,7 @@ void HUD()
         glVertex2f(1.5 * bounds, bounds / 2 + 10);
     glEnd();
     glLineWidth(1);
-    p.weapon.show();
+    //p.weapon.show();
 }
 
 // Event loop
