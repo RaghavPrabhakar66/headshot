@@ -292,10 +292,10 @@ class Player
         }
 	}
     void show();
-    void actions(bool keybuffer[], vector<GLfloat> mousebuffer, GLfloat bounds);
+    void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds);
     vector<vector<GLfloat>> see(Map m);
 };
-void Player::actions(bool keybuffer[], vector<GLfloat> mousebuffer, GLfloat bounds)
+void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
 {
     if (keybuffer[' '])
     {
@@ -421,12 +421,12 @@ void Sprite::show(Player p, GLfloat bounds)
         vector<GLfloat> dir{cos(p.angle * PI/180), sin(p.angle * PI / 180)};
         GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
         GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
+        cout<<a<<", "<<b<<endl;
         a = a / b + (3/2 * bounds);
         b = pos[2] / b + bounds / 2;
         glColor3f(1, 1, 0);
         glPointSize(20);
         glBegin(GL_POINTS);
-        cout<<a<<' '<<b;
         glVertex2d(a, b);
         glEnd();
         glPointSize(1);

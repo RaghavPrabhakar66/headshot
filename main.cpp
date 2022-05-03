@@ -7,20 +7,20 @@
 // Game Objects
 vector<vector<GLint>> walls{
 {1, 1, 1, 1, 1, 1, 1, 1},
+{1, 0, 0, 1, 0, 0, 0, 1},
+{1, 0, 0, 1, 0, 0, 0, 1},
+{1, 1, 1, 1, 0, 0, 0, 1},
 {1, 0, 0, 0, 0, 0, 0, 1},
-{1, 0, 1, 1, 1, 0, 0, 1},
-{1, 0, 0, 0, 1, 0, 0, 1},
-{1, 0, 0, 1, 1, 0, 0, 1},
 {1, 0, 0, 0, 0, 0, 0, 1},
 {1, 0, 0, 0, 0, 0, 0, 1},
 {1, 1, 1, 1, 1, 1, 1, 1},
 };
-Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
+Player p(vector<GLfloat>{100, 100}, 2, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
 Sprite s(vector<GLfloat>{100, 300});
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount;
 bool keybuffer[256] = {0};
-vector<GLfloat> mousebuffer{0, 0}, mouseLoc{bounds, bounds/2};
+GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
 
 // 2.5D rendering
 void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_size=32)
@@ -161,7 +161,7 @@ int main(GLint argc, char **argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(2 * bounds, bounds);
     glutInitWindowPosition(200, 200);
-    glutCreateWindow("Purgatory");
+    glutCreateWindow("Ok");
     glutDisplayFunc(display);
     glutKeyboardFunc(keyUp);
     glutKeyboardUpFunc(keyDown);
