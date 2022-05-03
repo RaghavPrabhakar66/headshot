@@ -1,2 +1,2 @@
 # raycasting3d
-remake of doom in opengl using raycasting
+remake of wolfenstein 3d in opengl using raycasting
