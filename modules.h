@@ -312,11 +312,11 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
     }
 
     vector<GLfloat> offset(2);
-    
+
     if ((sin(angle  * (PI / 180))) < 0)
     {
         offset[1] = -20;
-    } 
+    }
     else {
         offset[1] = 20;
     }
@@ -335,7 +335,7 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
     int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
     cout << int(pos[0] / 64) << " " << int(pos[1] / 64) << " +X " << m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)] << " +Y " << m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)] << " -X " << negative_x << " -Y " << negative_y << endl;
     float dx = 0, dy = 0;
-    
+
     if (keybuffer['w'])
     {
         dx = speed * cos(angle  * (PI / 180));

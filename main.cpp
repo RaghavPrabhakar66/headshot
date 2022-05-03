@@ -19,7 +19,6 @@ Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
 Sprite s(vector<GLfloat>{100, 300, 20});
 vector<Sprite> sprites;
-sprites.push_back(s);
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount;
 bool keybuffer[256] = {0};
 GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
@@ -70,7 +69,7 @@ void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_s
         }
         else
         {
-            shade = 0.8;
+            shade = 0.7;
             t[0] = (int)(d[3][index] / 2.0) % texture_size;
             if(d[1][index] == 3)
             {
@@ -155,6 +154,7 @@ void init()
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     gluOrtho2D(0, 2 * bounds, 0, bounds);
+    sprites.push_back(s);
 }
 
 int main(GLint argc, char **argv)
@@ -168,6 +168,8 @@ int main(GLint argc, char **argv)
     glutKeyboardFunc(keyUp);
     glutKeyboardUpFunc(keyDown);
     glutPassiveMotionFunc(mouse);
+//    glutMouseFunc(mouseKeys);
+    glutSetCursor(GLUT_CURSOR_NONE);
     init();
     timer(0);
 
