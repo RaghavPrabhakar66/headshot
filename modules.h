@@ -255,9 +255,11 @@ class Player
 	GLint rayCount;
     GLfloat step;
 	vector<Ray> rays;
+    vector<vector<GLint>> walls;
+    GLfloat temp;
 
     Player(){} //dummy constructor
-    Player(vector<GLfloat> pos, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle)
+    Player(vector<GLfloat> pos, vector<GLfloat> offset, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle, vector<vector<GLint>> walls)
     {
         weapons = vector<Weapon>{Weapon(0), Weapon(1)};
         weapon = weapons[0];
@@ -266,6 +268,9 @@ class Player
         this->speed = speed;
         this->rayCount = rayCount;
         this->FOV = FOV;
+        this->walls = walls;
+        this->offset = offset;
+
         if(rayCount > 1)
         {
             this->step = this->FOV / (rayCount - 1);
@@ -309,26 +314,62 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
     {
         weapon = weapons[1];
     }
+
+    
+    if ((sin(angle  * (PI / 180))) < 0)
+    {
+        offset[1] = -20;
+    } 
+    else {
+        offset[1] = 20;
+    }
+    if ((cos(angle  * (PI / 180))) < 0)
+    {
+        offset[0] = -20;
+    } else
+    {
+        offset[0] = 20;
+    }
+    // cout << "Right Wall: " << walls[int(abs((pos[0]+offset[0]) / 64))][int(abs(pos[1]/64))] << " Top Wall: " << walls[int(abs(pos[0]/64))][int(abs(pos[1]+offset[1]))/64] << " Left Wall: " << walls[int(abs((pos[0]-offset[0]) / 64))][int(abs(pos[1]/64))] << " Bottom Wall: " << walls[int(abs(pos[0]/64))][int(abs((pos[1]-offset[1])/64))] << " " << (pos[0]+offset[0]) / 64 << " " << (pos[1]+offset[1]) / 64 << endl;
+
+    int positive_x = walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
+    int positive_y = walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
+    int negative_x = walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
+    int negative_y = walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
+    cout << int(pos[0] / 64) << " " << int(pos[1] / 64) << " +X " << walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)] << " +Y " << walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)] << " -X " << negative_x << " -Y " << negative_y << endl;
+    float dx = 0, dy = 0;
+    
     if (keybuffer['w'])
     {
-        pos[0] += speed * cos(angle  * (3.14159 / 180));
-		pos[1] += speed * sin(angle  * (3.14159 / 180));
+        dx = speed * cos(angle  * (PI / 180));
+        dy = speed * sin(angle  * (PI / 180));
+
 	}
 	if (keybuffer['a'])
 	{
-		pos[0] -= speed * sin(angle  * (3.14159 / 180));
-		pos[1] += speed * cos(angle  * (3.14159 / 180));
+		dx =  -speed * sin(angle  * (PI / 180));
+		dy =  speed * cos(angle  * (PI / 180));
 	}
 	if (keybuffer['s'])
 	{
-	    pos[0] -= speed * cos(angle  * (3.14159 / 180));
-		pos[1] -= speed * sin(angle  * (3.14159 / 180));
+	    dx =  -speed * cos(angle  * (PI / 180));
+		dy =  -speed * sin(angle  * (PI / 180));
 	}
 	if (keybuffer['d'])
 	{
-		pos[0] += speed * sin(angle  * (3.14159 / 180));
-		pos[1] -= speed * cos(angle  * (3.14159 / 180));
+        dx =  speed * sin(angle  * (PI / 180));
+        dy =  -speed * cos(angle  * (PI / 180));
 	}
+    if((dx > 0 && positive_x == 0) || (dx < 0 && negative_x == 0))
+    {
+        pos[0] += dx;
+    }
+    if((dy > 0 && positive_y == 0) || (dy < 0 && negative_y == 0))
+    {
+        pos[1] += dy;
+    }
+
+
 	if (keybuffer['q'])
     {
         angle += speed ;
@@ -337,6 +378,7 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds)
     {
         angle -= speed;
     }
+
     angle += mousebuffer[0];
     mousebuffer[0] = 0;
     if(angle >= 360)
