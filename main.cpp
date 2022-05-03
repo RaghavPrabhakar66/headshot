@@ -15,9 +15,11 @@ vector<vector<GLint>> walls{
 {1, 0, 0, 0, 0, 0, 0, 1},
 {1, 1, 1, 1, 1, 1, 1, 1},
 };
-Player p(vector<GLfloat>{100, 100}, 2, 512, 60, 90);
+Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
-Sprite s(vector<GLfloat>{100, 300});
+Sprite s(vector<GLfloat>{100, 300, 20});
+vector<Sprite> sprites;
+sprites.push_back(s);
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount;
 bool keybuffer[256] = {0};
 GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
@@ -113,12 +115,12 @@ void display()
 {
     p.actions(keybuffer, mousebuffer, bounds);
     glClear(GL_COLOR_BUFFER_BIT);
-
+//    p.collisions(sprites)
     m.show();
     p.show();
     drawScene(p.see(m));
     HUD();
-    s.show(p, bounds);
+    s.show(p, bounds, sliceWidth);
     glutSwapBuffers();
 }
 

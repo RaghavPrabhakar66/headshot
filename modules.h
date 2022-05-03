@@ -410,10 +410,10 @@ class Sprite
         this->state = 1;
         this->type = 0;
     }
-    void show(Player p, GLfloat bounds);
+    void show(Player p, GLfloat bounds, GLfloat sliceWidth);
 };
 
-void Sprite::show(Player p, GLfloat bounds)
+void Sprite::show(Player p, GLfloat bounds, GLfloat sliceWidth)
 {
     if(state)
     {
@@ -421,13 +421,14 @@ void Sprite::show(Player p, GLfloat bounds)
         vector<GLfloat> dir{cos(p.angle * PI/180), sin(p.angle * PI / 180)};
         GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
         GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
+        float g = 108;
+        a = g *a / b + (3/2 * bounds);
+        b = g * pos[2] / b + bounds / 2;
         cout<<a<<", "<<b<<endl;
-        a = a / b + (3/2 * bounds);
-        b = pos[2] / b + bounds / 2;
         glColor3f(1, 1, 0);
         glPointSize(20);
         glBegin(GL_POINTS);
-        glVertex2d(a, b);
+        glVertex2d(a * sliceWidth, b * sliceWidth);
         glEnd();
         glPointSize(1);
 
