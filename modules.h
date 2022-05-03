@@ -400,12 +400,15 @@ vector<vector<GLfloat>> Player::see(Map m)
 
 class Sprite
 {
+    public:
     vector<GLfloat> pos;
     GLint type;
     GLint state;
     Sprite(vector<GLfloat> pos)
     {
         this->pos = pos;
+        this->state = 1;
+        this->type = 0;
     }
     void show(Player p, GLfloat bounds);
 };
@@ -419,11 +422,14 @@ void Sprite::show(Player p, GLfloat bounds)
         GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
         GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
         a = a / b + (3/2 * bounds);
-        b = b / pos[2] + bounds / 2;
-
-        glBegin(GLPOINTS)
+        b = pos[2] / b + bounds / 2;
+        glColor3f(1, 1, 0);
+        glPointSize(20);
+        glBegin(GL_POINTS);
+        cout<<a<<' '<<b;
         glVertex2d(a, b);
         glEnd();
+        glPointSize(1);
 
     }
 }

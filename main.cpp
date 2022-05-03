@@ -86,7 +86,7 @@ void drawScene(vector<vector<GLfloat>> d, GLfloat heightMax=320, GLint texture_s
         }
 
     }
-    s.show();
+
     glEnd();
     glPointSize(1);
 }
@@ -118,7 +118,7 @@ void display()
     p.show();
     drawScene(p.see(m));
     HUD();
-
+    s.show(p, bounds);
     glutSwapBuffers();
 }
 
