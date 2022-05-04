@@ -41,33 +41,86 @@ void Weapon::show(GLfloat bounds, GLfloat height)
     {
         if(attack)
         {
-            glColor3f(0.8, 0.8, 0.8);
-            glBegin(GL_POLYGON);
+            glBegin(GL_QUADS);
+                glColor3f(0.8, 0.8, 0.8);
                 glVertex2f(1.5 * bounds, bounds / 2);
+                glVertex2f(1.5 * bounds + 30, bounds / 2 - 20);
                 glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.64 * bounds, bounds / 2 - height / 2);
+                glColor3f(0.6, 0.6, 0.6);
+                glVertex2f(1.5 * bounds, bounds / 2 - 50);
+                glVertex2f(1.5 * bounds, bounds / 2);
+                glVertex2f(1.64 * bounds, bounds / 2 - height / 2);
                 glVertex2f(1.6 * bounds, bounds / 2 - height / 2);
             glEnd();
         attack = false;
         }
         else
         {
-            glColor3f(0.8, 0.8, 0.8);
-            glBegin(GL_POLYGON);
+            glBegin(GL_QUADS);
+                glColor3f(0.8, 0.8, 0.8);
                 glVertex2f(1.6 * bounds, bounds / 2);
+                glVertex2f(1.6 * bounds + 30, bounds / 2 - 20);
                 glVertex2f(1.8 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.74 * bounds, bounds / 2 - height / 2);
+                glColor3f(0.6, 0.6, 0.6);
+                glVertex2f(1.6 * bounds, bounds / 2 - 50);
+                glVertex2f(1.6 * bounds, bounds / 2);
+                glVertex2f(1.74 * bounds, bounds / 2 - height / 2);
                 glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
             glEnd();
         }
     }
     if (name == 1)
     {
-        glColor3f(0.8, 0.8, 0.8);
-        glBegin(GL_POLYGON);
-            glVertex2f(1.6 * bounds, bounds / 3);
-            glVertex2f(1.7 * bounds, bounds / 3);
-            glVertex2f(1.8 * bounds, bounds / 2 - height / 2);
-            glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
-        glEnd();
+        if(attack)
+        {
+
+            glColor3f(0.8, 0.8, 0);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.7 * bounds - 45, bounds / 2 - height / 2 + 60);
+                glVertex2f(1.7 * bounds - 75, bounds / 2 - height / 2 + 90);
+                glVertex2f(1.7 * bounds - 105, bounds / 2 - height / 2 + 90);
+                glVertex2f(1.7 * bounds - 90, bounds / 2 - height / 2 + 55);
+                glVertex2f(1.7 * bounds - 50, bounds / 2 - height / 2 + 40);
+            glEnd();
+            glColor3f(0.1, 0.1, 0.1);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2 + 30);
+                glVertex2f(1.7 * bounds - 5, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 20, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2 + 30);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2);
+            glEnd();
+            glColor3f(0.1, 0.1, 0.1);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.7 * bounds - 5, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 45, bounds / 2 - height / 2 + 60);
+                glVertex2f(1.7 * bounds - 50, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2 + 20);
+            glEnd();
+            attack = false;
+        }
+        else
+        {
+            glColor3f(0.1, 0.1, 0.1);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2);
+                glVertex2f(1.7 * bounds, bounds / 2 - height / 2 + 30);
+                glVertex2f(1.7 * bounds - 5, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 20, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2 + 30);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2);
+            glEnd();
+            glColor3f(0.1, 0.1, 0.1);
+            glBegin(GL_POLYGON);
+                glVertex2f(1.7 * bounds - 5, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 45, bounds / 2 - height / 2 + 60);
+                glVertex2f(1.7 * bounds - 50, bounds / 2 - height / 2 + 40);
+                glVertex2f(1.7 * bounds - 25, bounds / 2 - height / 2 + 20);
+            glEnd();
+        }
     }
 }
 
@@ -263,19 +316,18 @@ public:
     void displayDialogue(string dialogue, GLint maxLength, GLfloat offset);
 };
 
-void Hud::displayDialogue(string dialogue, GLint maxLength=60, GLfloat offset=3.5)
+void Hud::displayDialogue(string dialogue, GLint maxLength=60, GLfloat offset=20)
 {
     glColor3ub(0, 0, 0);
     for(int j = 0; j < (dialogue.length() / maxLength)+1; j++)
     {
-        glRasterPos2f(1.5*bounds-offset*maxLength, ((bounds/2 - height / 2) - (j+1)*20));
+        glRasterPos2f(bounds + offset, ((bounds/2 - height / 2) - (j+1)*20));
         for (int i = 0; i < maxLength; i++)
         {
             if (dialogue[(j*maxLength)+i] == '\0')
             {
                 break;
             }
-
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, dialogue[(j*maxLength)+i]);
         }
     }
@@ -333,23 +385,23 @@ class Sprite
         this->state = 0;
         this->type = 0;
     }
-    void show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds);
+    void show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth);
     void actions(Hud hud);
 };
 
-void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds)
+void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth)
 {
     vector<GLfloat> relativePos{pos[0] - playerPos[0], pos[1] - playerPos[1]};
     vector<GLfloat> dir{cos(playerAngle * PI/180), sin(playerAngle * PI / 180)};
     GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
     GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
-    //cout<<a<<", "<<b<<endl;
-    a = a / b + (3/2 * bounds);
-    b = pos[2] / b + bounds / 2;
+//    cout<<"("<<dir[0]<<", "<<dir[1]<<")"<<"("<<relativePos[0]<<", "<<relativePos[1]<<") "<<"("<<a<<", "<<b<<")"<<endl;
+    a = 108 * a / b + (3/2 * bounds);
+    b = 108 * pos[2] / b + bounds / 2;
     glColor3f(1, 1, 0);
     glPointSize(20);
     glBegin(GL_POINTS);
-    glVertex2d(a, b);
+    glVertex2d(a * sliceWidth, b * sliceWidth);
     glEnd();
     glPointSize(1);
 
@@ -357,16 +409,19 @@ void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds
     glColor3f(1, 1, 0);
     glPointSize(10);
     glBegin(GL_POINTS);
-    glVertex2d(pos[0], pos[1]);
+    glVertex2i(pos[0], pos[1]);
     glEnd();
     glPointSize(1);
 }
 
 void Sprite::actions(Hud hud)
 {
-    if (type == 0 && state)
+    if (type == 0)
     {
-        hud.displayDialogue("Hello There! Didnt expect to make it out here alive.");
+        if(state == 1)
+        {
+            hud.displayDialogue("Hello There! Didn't expect to make it out here alive. This place is crawling with monsters. No one can make it past...");
+        }
     }
 }
 
@@ -437,10 +492,6 @@ void Player::proximity(vector<Sprite> spritesBuffer) {
 
 void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
 {
-    if (keybuffer[' '])
-    {
-        weapon.attack = true;
-    }
     if (keybuffer['1'])
     {
         weapon = weapons[0];

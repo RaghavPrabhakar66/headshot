@@ -107,7 +107,7 @@ void display()
     {
         GLfloat dist = sqrt(pow(p.pos[0] - sprites[i].pos[0], 2) + pow(p.pos[1] - sprites[i].pos[1], 2));
         sprites[i].state = (dist < sprites[i].threshold);
-        sprites[i].show(p.pos, p.angle, bounds);
+        sprites[i].show(p.pos, p.angle, bounds, sliceWidth);
         sprites[i].actions(hud);
     }
     p.weapon.show(bounds, 320);
@@ -129,6 +129,17 @@ void mouse(int x, int y)
     mousebuffer[1] = mouseLoc[1] - y;
     mouseLoc[0] = x;
     mouseLoc[1] = y;
+}
+void mouseKeys(int button, int state, int x, int y)
+{
+    if(button == GLUT_LEFT_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            p.weapon.attack = true;
+
+        }
+    }
 }
 
 void timer(GLint lassi)
@@ -158,7 +169,7 @@ int main(GLint argc, char **argv)
     glutKeyboardFunc(keyUp);
     glutKeyboardUpFunc(keyDown);
     glutPassiveMotionFunc(mouse);
-//    glutMouseFunc(mouseKeys);
+    glutMouseFunc(mouseKeys);
     glutSetCursor(GLUT_CURSOR_NONE);
     init();
     timer(0);
