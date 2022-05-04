@@ -249,7 +249,7 @@ void Ray::show()
 
 }
 
-class Hud 
+class Hud
 {
 public:
     GLfloat bounds;
@@ -269,7 +269,7 @@ void Hud::displayDialogue(string dialogue, GLint maxLength=60, GLfloat offset=3.
     for(int j = 0; j < (dialogue.length() / maxLength)+1; j++)
     {
         glRasterPos2f(1.5*bounds-offset*maxLength, ((bounds/2 - height / 2) - (j+1)*20));
-        for (int i = 0; i < maxLength; i++) 
+        for (int i = 0; i < maxLength; i++)
         {
             if (dialogue[(j*maxLength)+i] == '\0')
             {
@@ -283,7 +283,7 @@ void Hud::displayDialogue(string dialogue, GLint maxLength=60, GLfloat offset=3.
 }
 
 void Hud::show()
-{   
+{
     // crosshair
     glLineWidth(2);
     glBegin(GL_LINES);
@@ -450,62 +450,62 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         weapon = weapons[1];
     }
 
-    vector<GLfloat> offset(2);
+    GLfloat offset = 10;
 
-    if ((sin(angle  * (PI / 180))) < 0)
-    {
-        offset[1] = -20;
-    }
-    else {
-        offset[1] = 20;
-    }
-    if ((cos(angle  * (PI / 180))) < 0)
-    {
-        offset[0] = -20;
-    } else
-    {
-        offset[0] = 20;
-    }
+//    if ((sin(angle  * (PI / 180))) < 0)
+//    {
+//        offset[1] = -20;
+//    }
+//    else {
+//        offset[1] = 20;
+//    }
+//    if ((cos(angle  * (PI / 180))) < 0)
+//    {
+//        offset[0] = -20;
+//    } else
+//    {
+//        offset[0] = 20;
+//    }
     // cout << "Right Wall: " << walls[int(abs((pos[0]+offset[0]) / 64))][int(abs(pos[1]/64))] << " Top Wall: " << walls[int(abs(pos[0]/64))][int(abs(pos[1]+offset[1]))/64] << " Left Wall: " << walls[int(abs((pos[0]-offset[0]) / 64))][int(abs(pos[1]/64))] << " Bottom Wall: " << walls[int(abs(pos[0]/64))][int(abs((pos[1]-offset[1])/64))] << " " << (pos[0]+offset[0]) / 64 << " " << (pos[1]+offset[1]) / 64 << endl;
 
-    int positive_x = m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
-    int positive_y = m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
-    int negative_x = m.walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
-    int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
-    int quadrant_one = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] + offset[1])/64)];
-    int quadrant_two = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] + offset[1])/64)];
-    int quadrant_three = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] - offset[1])/64)];
-    int quadrant_four = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] - offset[1])/64)];
+//    int positive_x = m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
+//    int positive_y = m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
+//    int negative_x = m.walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
+//    int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
+//    int quadrant_one = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] + offset[1])/64)];
+//    int quadrant_two = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] + offset[1])/64)];
+//    int quadrant_three = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] - offset[1])/64)];
+//    int quadrant_four = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] - offset[1])/64)];
     float dx = 0, dy = 0;
 
     if (keybuffer['w'])
     {
-        dx = speed * cos(angle  * (PI / 180));
-        dy = speed * sin(angle  * (PI / 180));
+        dx += speed * cos(angle  * (PI / 180));
+        dy += speed * sin(angle  * (PI / 180));
 
 	}
 	if (keybuffer['a'])
 	{
-		dx =  -speed * sin(angle  * (PI / 180));
-		dy =  speed * cos(angle  * (PI / 180));
+		dx +=  -speed * sin(angle  * (PI / 180));
+		dy +=  speed * cos(angle  * (PI / 180));
 	}
 	if (keybuffer['s'])
 	{
-	    dx =  -speed * cos(angle  * (PI / 180));
-		dy =  -speed * sin(angle  * (PI / 180));
+	    dx +=  -speed * cos(angle  * (PI / 180));
+		dy +=  -speed * sin(angle  * (PI / 180));
 	}
 	if (keybuffer['d'])
 	{
-        dx =  speed * sin(angle  * (PI / 180));
-        dy =  -speed * cos(angle  * (PI / 180));
+        dx +=  speed * sin(angle  * (PI / 180));
+        dy +=  -speed * cos(angle  * (PI / 180));
 	}
-    // cout << dx << " " << dy << " +X " << positive_x << " +Y " << positive_y << " -X " << negative_x << " -Y " << negative_y;
-    // cout <<  " Q1: " << quadrant_one << " Q2: " << quadrant_two << " Q3: " << quadrant_three << " Q4: " << quadrant_four << endl;
-    if((dx > 0 && positive_x == 0) || (dx < 0 && negative_x == 0))
+//     cout << dx << " " << dy << " +X " << positive_x << " +Y " << positive_y << " -X " << negative_x << " -Y " << negative_y;
+//     cout <<  " Q1: " << quadrant_one << " Q2: " << quadrant_two << " Q3: " << quadrant_three << " Q4: " << quadrant_four << endl;
+    if(m.walls[(pos[0] + dx * offset) / m.blockSize][pos[1] / m.blockSize] != 1)
     {
         pos[0] += dx;
     }
-    if((dy > 0 && positive_y == 0) || (dy < 0 && negative_y == 0))
+    if(m.walls[pos[0]/ m.blockSize][(pos[1] + dy * offset) / m.blockSize] != 1)
     {
         pos[1] += dy;
     }

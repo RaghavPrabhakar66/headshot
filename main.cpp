@@ -48,7 +48,7 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size=32)
     {
         GLfloat index =  d[0].size() - i - 1;
 
-        sliceHeight = m.blockSize * maxHeight / (d[0][index] * cos((p.angle - p.rays[index].angle) * (PI / 180)));
+        sliceHeight = 0.5 * m.blockSize * maxHeight / (d[0][index] * cos((p.angle - p.rays[index].angle) * (PI / 180)));
         vector<GLfloat> t{0, 0}, texture_offset{0, 0}, texture_step{0, texture_size / (sliceHeight + 1)};
         if(sliceHeight > maxHeight)
         {
@@ -104,7 +104,7 @@ void display()
     drawScene(p.see(m));
     hud.show();
     for (int i=0; i<sprites.size(); i++)
-    {   
+    {
         GLfloat dist = sqrt(pow(p.pos[0] - sprites[i].pos[0], 2) + pow(p.pos[1] - sprites[i].pos[1], 2));
         sprites[i].state = (dist < sprites[i].threshold);
         sprites[i].show(p.pos, p.angle, bounds);
@@ -145,7 +145,6 @@ void init()
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     gluOrtho2D(0, 2 * bounds, 0, bounds);
-    sprites.push_back(s);
 }
 
 int main(GLint argc, char **argv)
