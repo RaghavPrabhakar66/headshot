@@ -198,14 +198,14 @@ vector<GLfloat> Ray::cast(Map m)
     {
         h[1] = (((int)pos[1] / m.blockSize) * m.blockSize)-0.0001;
         h[0] = pos[0] + (pos[1] - h[1]) * atan;
-        offsetH = vector<GLfloat> {m.blockSize*atan, -m.blockSize};
+        offsetH = vector<GLfloat> {float(m.blockSize*atan), float(-m.blockSize)};
     }
     // Up
     else if(angle < 180)
     {
         h[1] = (((int)pos[1] / m.blockSize) * m.blockSize) + m.blockSize;
         h[0] = pos[0] + (pos[1] - h[1]) * atan;
-        offsetH = vector<GLfloat> {-m.blockSize*atan, m.blockSize};
+        offsetH = vector<GLfloat> {float(-m.blockSize*atan),float(m.blockSize)};
     }
     else if(angle == 0 || angle == 180)
     {
@@ -219,14 +219,14 @@ vector<GLfloat> Ray::cast(Map m)
     {
         v[0] = (((int)pos[0] / m.blockSize) * m.blockSize)-0.0001;
         v[1] = pos[1] + (pos[0] - v[0]) * ntan;
-        offsetV = vector<GLfloat> {-m.blockSize, m.blockSize*ntan};
+        offsetV = vector<GLfloat> {float(-m.blockSize), float(m.blockSize*ntan)};
     }
     // Right
     else if(270 < angle || angle < 90)
     {
         v[0] = (((int)pos[0] / m.blockSize) * m.blockSize) + m.blockSize;
         v[1] = pos[1] + (pos[0] - v[0]) * ntan;
-        offsetV = vector<GLfloat> {m.blockSize, -m.blockSize*ntan};
+        offsetV = vector<GLfloat> {float(m.blockSize), float(-m.blockSize*ntan)};
     }
     else if(angle == 90 || angle == 270)
     {
@@ -391,21 +391,28 @@ class Sprite
 
 void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth)
 {
+    // Render sprite on screen
     vector<GLfloat> relativePos{pos[0] - playerPos[0], pos[1] - playerPos[1]};
-    vector<GLfloat> dir{cos(playerAngle * PI/180), sin(playerAngle * PI / 180)};
-    GLfloat a = relativePos[1]*dir[0] + relativePos[0]*dir[1];
-    GLfloat b = relativePos[0]*dir[0] - relativePos[1]*dir[1];
-//    cout<<"("<<dir[0]<<", "<<dir[1]<<")"<<"("<<relativePos[0]<<", "<<relativePos[1]<<") "<<"("<<a<<", "<<b<<")"<<endl;
-    a = 108 * a / b + (3/2 * bounds);
-    b = 108 * pos[2] / b + bounds / 2;
-    glColor3f(1, 1, 0);
-    glPointSize(20);
-    glBegin(GL_POINTS);
-    glVertex2d(a * sliceWidth, b * sliceWidth);
-    glEnd();
-    glPointSize(1);
+    GLfloat dist = sqrt(relativePos[0] * relativePos[0] + relativePos[1] * relativePos[1]);
+    GLfloat theta = atan(relativePos[1] / relativePos[0])/ PI * 180;
+    if(relativePos[0] < 0)
+    {
+        theta += 180;
+    }
+    theta -= playerAngle;
+    cout<<theta<<"  ("<<relativePos[0]<<", "<<relativePos[1]<<") "<<endl;
 
-    // draw sprite on minimap
+    if(theta < 30 && theta > -30)
+    {
+        glColor3f(1, 1, 0);
+        glPointSize(10 * 320/dist);
+        glBegin(GL_POINTS);
+        glVertex2d(1.5 * bounds - sin(theta*PI / 180) * bounds, bounds / 2);
+        glEnd();
+        glPointSize(1);
+    }
+
+    // Draw sprite on the mini-map
     glColor3f(1, 1, 0);
     glPointSize(10);
     glBegin(GL_POINTS);
@@ -420,7 +427,7 @@ void Sprite::actions(Hud hud)
     {
         if(state == 1)
         {
-            hud.displayDialogue("Hello There! Didn't expect to make it out here alive. This place is crawling with monsters. No one can make it past...");
+            hud.displayDialogue("Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
         }
     }
 }
@@ -492,6 +499,7 @@ void Player::proximity(vector<Sprite> spritesBuffer) {
 
 void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
 {
+    // Weapon switching
     if (keybuffer['1'])
     {
         weapon = weapons[0];
@@ -501,32 +509,8 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         weapon = weapons[1];
     }
 
+    // WASD movement
     GLfloat offset = 10;
-
-//    if ((sin(angle  * (PI / 180))) < 0)
-//    {
-//        offset[1] = -20;
-//    }
-//    else {
-//        offset[1] = 20;
-//    }
-//    if ((cos(angle  * (PI / 180))) < 0)
-//    {
-//        offset[0] = -20;
-//    } else
-//    {
-//        offset[0] = 20;
-//    }
-    // cout << "Right Wall: " << walls[int(abs((pos[0]+offset[0]) / 64))][int(abs(pos[1]/64))] << " Top Wall: " << walls[int(abs(pos[0]/64))][int(abs(pos[1]+offset[1]))/64] << " Left Wall: " << walls[int(abs((pos[0]-offset[0]) / 64))][int(abs(pos[1]/64))] << " Bottom Wall: " << walls[int(abs(pos[0]/64))][int(abs((pos[1]-offset[1])/64))] << " " << (pos[0]+offset[0]) / 64 << " " << (pos[1]+offset[1]) / 64 << endl;
-
-//    int positive_x = m.walls[int((pos[0] + offset[0])/64)][int(pos[1]/64)];
-//    int positive_y = m.walls[int(pos[0]/64)][int((pos[1] + offset[1])/64)];
-//    int negative_x = m.walls[int((pos[0] - offset[0])/64)][int(pos[1]/64)];
-//    int negative_y = m.walls[int(pos[0]/64)][int((pos[1] - offset[1])/64)];
-//    int quadrant_one = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] + offset[1])/64)];
-//    int quadrant_two = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] + offset[1])/64)];
-//    int quadrant_three = m.walls[int((pos[0] - offset[0])/64)][int((pos[1] - offset[1])/64)];
-//    int quadrant_four = m.walls[int((pos[0] + offset[0])/64)][int((pos[1] - offset[1])/64)];
     float dx = 0, dy = 0;
 
     if (keybuffer['w'])
@@ -550,8 +534,6 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         dx +=  speed * sin(angle  * (PI / 180));
         dy +=  -speed * cos(angle  * (PI / 180));
 	}
-//     cout << dx << " " << dy << " +X " << positive_x << " +Y " << positive_y << " -X " << negative_x << " -Y " << negative_y;
-//     cout <<  " Q1: " << quadrant_one << " Q2: " << quadrant_two << " Q3: " << quadrant_three << " Q4: " << quadrant_four << endl;
     if(m.walls[(pos[0] + dx * offset) / m.blockSize][pos[1] / m.blockSize] != 1)
     {
         pos[0] += dx;
@@ -561,7 +543,7 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         pos[1] += dy;
     }
 
-
+    // Rotation???
 	if (keybuffer['q'])
     {
         angle += speed ;
@@ -571,18 +553,19 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
         angle -= speed;
     }
 
+    // Real rotation
     angle += mousebuffer[0];
     mousebuffer[0] = 0;
     if(angle >= 360)
     {
         angle -= 360;
     }
-
     else if(angle < 0)
     {
         angle += 360;
     }
 
+    // Moving the rays
 	for(int i = 0; i < rayCount; i++)
     {
         rays[i].pos = pos;
