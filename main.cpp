@@ -17,8 +17,8 @@ vector<vector<GLint>> walls{
 };
 Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
-Sprite s1(vector<GLfloat>{100, 300}, 30, 0);
-vector<Sprite> sprites {s1};
+Sprite s1(vector<GLfloat>{100, 300}, 30, 0), s2(vector<GLfloat>{300, 100}, 60, 1);
+vector<Sprite> sprites {s1, s2};
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount, maxHeight = 320;
 bool keybuffer[256] = {0};
 GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
@@ -148,6 +148,21 @@ void timer(GLint lassi)
     glutTimerFunc(20, timer, 0);
 }
 
+void reshape(int w, int h)
+{
+    if(h == 0)
+		h = 1;
+
+	glLoadIdentity();
+    bounds = h;
+	sliceWidth = bounds / p.rayCount;
+	m.blockSize = bounds / 8;
+	hud.bounds = bounds;
+    glutReshapeWindow(2 * bounds, bounds);
+	glViewport(0, 0, bounds * 2, bounds);
+	gluOrtho2D(0, 2 * bounds, 0, bounds);
+}
+
 // Boilerplate
 void init()
 {
@@ -171,6 +186,7 @@ int main(GLint argc, char **argv)
     glutPassiveMotionFunc(mouse);
     glutMouseFunc(mouseKeys);
     glutSetCursor(GLUT_CURSOR_NONE);
+    glutReshapeFunc(reshape);
     init();
     timer(0);
 

@@ -1,4 +1,4 @@
-#ifndef MODULES_H_INCLUDED
+ZZ#ifndef MODULES_H_INCLUDED
 #define MODULES_H_INCLUDED
 
 #endif // MODULES_H_INCLUDED
@@ -383,7 +383,7 @@ class Sprite
         this->pos = pos;
         this->threshold = threshold;
         this->state = 0;
-        this->type = 0;
+        this->type = type;
     }
     void show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth);
     void actions(Hud hud);
@@ -405,7 +405,7 @@ void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds
     if(theta < 30 && theta > -30)
     {
         glColor3f(1, 1, 0);
-        glPointSize(10 * 320/dist);
+        glPointSize(10 * 320 / dist);
         glBegin(GL_POINTS);
         glVertex2d(1.5 * bounds - sin(theta*PI / 180) * bounds, bounds / 2);
         glEnd();
@@ -428,6 +428,13 @@ void Sprite::actions(Hud hud)
         if(state == 1)
         {
             hud.displayDialogue("Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
+        }
+    }
+    if(type == 1)
+    {
+        if(state == 1)
+        {
+            hud.displayDialogue("Grrrrrrr... I kil");
         }
     }
 }
