@@ -6,26 +6,26 @@
 
 // Game Objects
 vector<vector<GLint>> walls{
-{1, 1, 1, 1, 1, 1, 1, 1},
-{1, 0, 0, 0, 0, 0, 0, 1},
-{1, 0, 0, 1, 0, 0, 0, 1},
-{1, 1, 1, 1, 0, 0, 0, 1},
-{1, 0, 0, 0, 0, 0, 0, 1},
-{1, 0, 0, 0, 0, 0, 0, 1},
-{1, 0, 0, 0, 0, 0, 0, 1},
-{1, 1, 1, 1, 1, 1, 1, 1},
-};
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 1, 0, 0, 0, 1},
+    {1, 1, 1, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+}; 
 Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
 Map m(vector<GLfloat>{0, 0}, walls, 64);
 Sprite s1(vector<GLfloat>{100, 300}, 30, 0), s2(vector<GLfloat>{300, 100}, 60, 1);
 vector<Sprite> sprites {s1, s2};
 GLfloat bounds = 512, sliceWidth = bounds / p.rayCount, maxHeight = 320;
 bool keybuffer[256] = {0};
-GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds/2};
+GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds / 2};
 Hud hud(bounds, maxHeight);
 
 // 2.5D rendering
-void drawScene(vector<vector<GLfloat>> d, GLint texture_size=32)
+void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
 {
     GLfloat sliceHeight, offset, shade;
     glColor3ub(51, 153, 255);
@@ -44,25 +44,25 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size=32)
 
     glPointSize(sliceWidth);
     glBegin(GL_POINTS);
-    for(int i = 0; i < d[0].size() ; i++)
+    for (int i = 0; i < d[0].size(); i++)
     {
-        GLfloat index =  d[0].size() - i - 1;
+        GLfloat index = d[0].size() - i - 1;
 
         sliceHeight = 0.5 * m.blockSize * maxHeight / (d[0][index] * cos((p.angle - p.rays[index].angle) * (PI / 180)));
         vector<GLfloat> t{0, 0}, texture_offset{0, 0}, texture_step{0, texture_size / (sliceHeight + 1)};
-        if(sliceHeight > maxHeight)
+        if (sliceHeight > maxHeight)
         {
             texture_offset[1] = (sliceHeight - maxHeight) / 2;
             sliceHeight = maxHeight;
         }
 
-        offset = bounds/2 - sliceHeight / 2;
+        offset = bounds / 2 - sliceHeight / 2;
         t[1] = texture_offset[1] * texture_step[1];
         shade = 0.8;
-        if(d[1][index] <= 1)
+        if (d[1][index] <= 1)
         {
             t[0] = (int)(d[2][index] / 2.0) % texture_size;
-            if(d[1][index] == 0)
+            if (d[1][index] == 0)
             {
                 t[0] = 31 - t[0];
                 shade = 1;
@@ -72,21 +72,20 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size=32)
         {
             shade = 0.7;
             t[0] = (int)(d[3][index] / 2.0) % texture_size;
-            if(d[1][index] == 3)
+            if (d[1][index] == 3)
             {
                 t[0] = 31 - t[0];
                 shade = 1;
             }
         }
-        for(int j = 1; j <= sliceHeight; j++)
+        for (int j = 1; j <= sliceHeight; j++)
         {
-            GLfloat c = texture[(int)t[1]*texture_size + (int)t[0]] * shade;
+            GLfloat c = texture[(int)t[1] * texture_size + (int)t[0]] * shade;
             glColor3f(c, c, c);
-            glVertex2f(bounds + i * sliceWidth + sliceWidth/2, offset - sliceWidth/2);
-            glVertex2f(bounds + i * sliceWidth + sliceWidth/2, j + offset - sliceWidth/2);
+            glVertex2f(bounds + i * sliceWidth + sliceWidth / 2, offset - sliceWidth / 2);
+            glVertex2f(bounds + i * sliceWidth + sliceWidth / 2, j + offset - sliceWidth / 2);
             t[1] += texture_step[1];
         }
-
     }
 
     glEnd();
@@ -98,12 +97,12 @@ void display()
 {
     p.actions(keybuffer, mousebuffer, bounds, m);
     glClear(GL_COLOR_BUFFER_BIT);
-//    p.collisions(sprites)
+    //    p.collisions(sprites)
     m.show();
     p.show();
     drawScene(p.see(m));
     hud.show();
-    for (int i=0; i<sprites.size(); i++)
+    for (int i = 0; i < sprites.size(); i++)
     {
         GLfloat dist = sqrt(pow(p.pos[0] - sprites[i].pos[0], 2) + pow(p.pos[1] - sprites[i].pos[1], 2));
         sprites[i].state = (dist < sprites[i].threshold);
@@ -117,11 +116,11 @@ void display()
 // Mechanical functions
 void keyUp(unsigned char c, int x, int y)
 {
-    keybuffer[c] = true;
+    keybuffer[c] = false;
 }
 void keyDown(unsigned char c, int x, int y)
 {
-    keybuffer[c] = false;
+    keybuffer[c] = true;
 }
 void mouse(int x, int y)
 {
@@ -132,12 +131,11 @@ void mouse(int x, int y)
 }
 void mouseKeys(int button, int state, int x, int y)
 {
-    if(button == GLUT_LEFT_BUTTON)
+    if (button == GLUT_LEFT_BUTTON)
     {
-        if(state == GLUT_DOWN)
+        if (state == GLUT_DOWN)
         {
             p.weapon.attack = true;
-
         }
     }
 }
@@ -169,24 +167,24 @@ void init()
     glClearColor(0, 0, 0, 1);
     glPointSize(4);
     glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+    glLoadIdentity();
     gluOrtho2D(0, 2 * bounds, 0, bounds);
 }
 
 int main(GLint argc, char **argv)
 {
-    glutInit(&argc, argv );
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);    // 2 buffer therefore, smoother
     glutInitWindowSize(2 * bounds, bounds);
     glutInitWindowPosition(200, 200);
-    glutCreateWindow("Ok");
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyUp);
-    glutKeyboardUpFunc(keyDown);
-    glutPassiveMotionFunc(mouse);
-    glutMouseFunc(mouseKeys);
-    glutSetCursor(GLUT_CURSOR_NONE);
+    glutCreateWindow("Headshot");
+    glutDisplayFunc(display);                       // render the graphics
     glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyDown);                      //this functions handle if a key is pressed or not
+    glutKeyboardUpFunc(keyUp);                      //this functions handle if a key is pressed or not
+    glutPassiveMotionFunc(mouse);                   //mouse movement
+    glutMouseFunc(mouseKeys);                       //records mouse keys
+    glutSetCursor(GLUT_CURSOR_DESTROY);             //cursor design
     init();
     timer(0);
 
