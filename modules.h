@@ -620,12 +620,12 @@ public:
         this->dialogue = dialogue;
         this->visible = false;
     }
-    void show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances);
+    void show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size);
     void actions(Hud hud);
     void see(Player p);
 };
 
-void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances)
+void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size = 32)
 {
     // Render sprite on screen
     vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
@@ -649,24 +649,29 @@ void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLf
     visible = false;
     glPointSize(1);
     GLfloat width = shape[0] * 6 * 64 / dist, height = shape[1] * 6 * 64 / dist;
-    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2, c;
-    vector<GLfloat> t{0, 0}, tstep{32 / (width + 1), 32 / (height + 1)};
-    for(int i = x; i < x + width; i++)
+    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2, c, r, g, b;
+    vector<GLfloat> t{0, 0}, tstep{texture_size / (width + 1), texture_size / (height + 1)};
+    for(int i = x + width; i > x; i--)
     {
         t[1] = 0;
-        for(int j = y; j < y + height; j++)
+        for(int j = y + height; j > y; j--)
         {
             if (theta < p.FOV / 2 && theta > -p.FOV / 2 && dist > 5  && distances[0][(int)(p.rayCount * (p.FOV / 2 + theta) / p.FOV)] > dist)
             {
                 if(bounds < i && i < 2 * bounds && bounds / 2 -maxHeight / 2 < j && j < bounds / 2 + maxHeight / 2)
                 {
-                    c = (int(t[1]) * 32 + int(t[0])) * 3;
-
-                    glBegin(GL_POINTS);
-                    glColor3ub(texture[c], texture[c + 1], texture[c + 2]);
-                    glVertex2d(i, j);
-                    glEnd();
-                    visible = true;
+                    c = (int(t[1]) * texture_size + int(t[0])) * 3;
+                    r = texture[c];
+                    g = texture[c + 1];
+                    b = texture[c + 2];
+                    if(!(r == 64 && g == 255 && b == 20))
+                    {
+                        glBegin(GL_POINTS);
+                        glColor3ub(r, g, b);
+                        glVertex2d(i, j);
+                        glEnd();
+                        visible = true;
+                    }
                 }
             }
             t[1] += tstep[1];

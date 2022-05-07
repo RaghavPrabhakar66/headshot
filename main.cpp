@@ -29,8 +29,8 @@ vector<vector<GLint>> walls{
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, walls, blockSize);
-Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{3, 3}, grass_texture, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{3, 6}, grass_texture, 60, 0.5);
+Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{6, 12}, jesus_texture, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{6, 6}, hand_texture, 60, 0.5);
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1};
@@ -109,7 +109,7 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
     for (int i = 0; i < sprites.size(); i++)
     {
         sprites[i].see(p);
-        sprites[i].show(p, bounds, maxHeight, d);
+        sprites[i].show(p, bounds, maxHeight, d, 128);
         sprites[i].actions(hud);
     }
     for (int i = 0; i < enemies.size(); i++)
