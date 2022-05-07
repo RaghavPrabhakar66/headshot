@@ -29,8 +29,8 @@ vector<vector<GLint>> walls{
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, walls, blockSize);
-Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{3, 3}, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{3, 6}, 60, 0.5);
+Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{3, 3}, grass_texture, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{3, 6}, grass_texture, 60, 0.5);
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1};

@@ -602,16 +602,19 @@ class Sprite
 public:
     vector<GLfloat> pos;
     vector<GLfloat> shape;
+    vector<GLfloat> texture;
     string dialogue;
+
     GLfloat threshold;
     bool proximity;
     bool visible;
 
     Sprite() {}
-    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, GLfloat threshold, string dialogue)
+    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, string dialogue)
     {
         this->pos = pos;
         this->shape = shape;
+        this->texture = texture;
         this->threshold = threshold;
         this->proximity = false;
         this->dialogue = dialogue;
@@ -645,25 +648,30 @@ void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLf
 
     visible = false;
     glPointSize(1);
-    GLfloat width = shape[0] * 6 * 64 / dist;
-    GLfloat height = shape[1] * 6 * 64 / dist;
-    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2;
+    GLfloat width = shape[0] * 6 * 64 / dist, height = shape[1] * 6 * 64 / dist;
+    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2, c;
+    vector<GLfloat> t{0, 0}, tstep{32 / (width + 1), 32 / (height + 1)};
     for(int i = x; i < x + width; i++)
     {
+        t[1] = 0;
         for(int j = y; j < y + height; j++)
         {
             if (theta < p.FOV / 2 && theta > -p.FOV / 2 && dist > 5  && distances[0][(int)(p.rayCount * (p.FOV / 2 + theta) / p.FOV)] > dist)
             {
                 if(bounds < i && i < 2 * bounds && bounds / 2 -maxHeight / 2 < j && j < bounds / 2 + maxHeight / 2)
                 {
+                    c = (int(t[1]) * 32 + int(t[0])) * 3;
+
                     glBegin(GL_POINTS);
-                    glColor3f(0, 1, 0);
+                    glColor3ub(texture[c], texture[c + 1], texture[c + 2]);
                     glVertex2d(i, j);
                     glEnd();
                     visible = true;
                 }
             }
+            t[1] += tstep[1];
         }
+        t[0] += tstep[0];
     }
 
     // Draw sprite on the mini-map
@@ -691,10 +699,11 @@ class Enemy: public Sprite
 {
     public:
     GLfloat speed;
-    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, GLfloat threshold, GLfloat speed=1)
+    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, GLfloat speed = 1)
     {
         this->pos = pos;
         this->shape = shape;
+        this->texture = texture;
         this->threshold = threshold;
         this->speed = speed;
         this->proximity = false;
