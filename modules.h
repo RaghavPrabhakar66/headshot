@@ -318,24 +318,24 @@ class Hud
 public:
     GLfloat bounds;
     GLfloat height;
-    GLint textTime;
+    GLint timer;
     string text;
 
     Hud(GLfloat bounds, GLfloat height)
     {
         this->bounds = bounds;
         this->height = height;
-        this->textTime = 0;
+        this->text = "";
+        this->timer = 0;
     }
     void show(GLint maxLength, GLfloat offset);
-    void displayDialogue(string dialogue, GLint time);
+    void displayDialogue(string text);
 };
 
-void Hud::displayDialogue(string dialogue, GLint time = 1000)
+void Hud::displayDialogue(string text)
 {
-    text = dialogue;
-    textTime = time;
-//    cout<<textTime;
+    this->text = text;
+    this->timer = 50;
 }
 
 void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
@@ -353,11 +353,12 @@ void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
     glEnd();
     glLineWidth(1);
 
-//    cout<<textTime<<" ";
-    if(textTime)
+//    cout<<textbox<<endl;
+
+    if(timer)
     {
-        cout<<"sdsd";
         // textbox
+        cout<<"why have you forsaken me";
         glBegin(GL_QUADS);
         glColor3ub(223, 54, 45);
         glVertex2f(bounds, 0);
@@ -390,7 +391,7 @@ void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[(j * maxLength) + i]);
             }
         }
-//        textTime--;
+        timer--;
     }
 
     // equipped weapon
@@ -460,13 +461,26 @@ public:
         }
     }
     void show();
-    void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m);
+    void actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m);
     vector<vector<GLfloat>> see(Map m);
 };
 
 
-void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
+void Player::actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m)
 {
+    // Use action
+//    if(keybuffer['f'])
+//    {
+//
+//    }
+
+    // Mouse Left Click
+    if(mousebuffer[0])
+    {
+        weapon.attack = true;
+        mousebuffer[0] = 0;
+    }
+
     // Weapon switching
     if (keybuffer['1'])
     {
@@ -521,8 +535,8 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
     }
 
     // Real rotation
-    angle += mousebuffer[0];
-    mousebuffer[0] = 0;
+    angle += mousebuffer[5];
+    mousebuffer[5] = 0;
     if (angle >= 360)
     {
         angle -= 360;

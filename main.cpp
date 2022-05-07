@@ -4,6 +4,18 @@
 #include "modules.h"
 #include "textures.h"
 
+// Parameters
+GLfloat bounds = 512;
+GLfloat rayCount = 512;
+GLfloat sliceWidth = bounds / rayCount;
+GLfloat maxHeight = 320;
+vector<GLfloat> playerpos{100, 100};
+GLfloat playerSpeed = 1;
+GLfloat FOV = 60;
+vector<GLfloat> mappos{0, 0};
+GLfloat blockSize = 64;
+
+
 // Game Objects
 vector<vector<GLint>> walls{
     {1, 1, 1, 1, 1, 1, 1, 1},
@@ -15,16 +27,18 @@ vector<vector<GLint>> walls{
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1},
 };
-Player p(vector<GLfloat>{100, 100}, 1, 512, 60, 90);
-Map m(vector<GLfloat>{0, 0}, walls, 64);
+Player p(playerpos, playerSpeed, rayCount, FOV, 90);
+Map m(mappos, walls, blockSize);
 Sprite s1(vector<GLfloat>{100, 300}, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
 Enemy e1(vector<GLfloat>{300, 100}, 60, 0.5);
+Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1};
-GLfloat bounds = 512, sliceWidth = bounds / p.rayCount, maxHeight = 320;
+
+// Input buffer
 bool keybuffer[256] = {0};
-GLfloat mousebuffer[] = {0, 0}, mouseLoc[] = {bounds, bounds / 2};
-Hud hud(bounds, maxHeight);
+GLint mousebuffer[] = {0, 0, 1, 1, 1, 1, 1}, mouseLoc[] = {bounds, bounds / 2};
+
 
 // 2.5D rendering
 void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
@@ -131,20 +145,15 @@ void keyDown(unsigned char c, int x, int y)
 }
 void mouse(int x, int y)
 {
-    mousebuffer[0] = mouseLoc[0] - x;
-    mousebuffer[1] = mouseLoc[1] - y;
+    mousebuffer[5] = mouseLoc[0] - x;
+    mousebuffer[6] = mouseLoc[1] - y;
     mouseLoc[0] = x;
     mouseLoc[1] = y;
 }
 void mouseKeys(int button, int state, int x, int y)
 {
-    if (button == GLUT_LEFT_BUTTON)
-    {
-        if (state == GLUT_DOWN)
-        {
-            p.weapon.attack = true;
-        }
-    }
+    mousebuffer[button] = state;
+    cout<<button<<" "<<state<<endl;
 }
 
 void timer(GLint lassi)
