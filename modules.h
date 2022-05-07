@@ -475,10 +475,10 @@ void Player::actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map 
 //    }
 
     // Mouse Left Click
-    if(mousebuffer[0])
+    if(mousebuffer[0] == 0)
     {
         weapon.attack = true;
-        mousebuffer[0] = 0;
+        mousebuffer[0] = 1;
     }
 
     // Weapon switching
@@ -567,9 +567,12 @@ void Player::actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map 
 }
 void Player::show()
 {
+    glPointSize(4);
+    glColor3f(0.2, 0.2, 1);
     glBegin(GL_POINTS);
     glVertex2f(pos[0], pos[1]);
     glEnd();
+
 }
 
 vector<vector<GLfloat>> Player::see(Map m)
@@ -598,26 +601,28 @@ class Sprite
 {
 public:
     vector<GLfloat> pos;
+    vector<GLfloat> shape;
     string dialogue;
-    bool proximity;
     GLfloat threshold;
+    bool proximity;
     bool visible;
 
     Sprite() {}
-    Sprite(vector<GLfloat> pos, GLfloat threshold, string dialogue)
+    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, GLfloat threshold, string dialogue)
     {
         this->pos = pos;
+        this->shape = shape;
         this->threshold = threshold;
         this->proximity = false;
         this->dialogue = dialogue;
         this->visible = false;
     }
-    void show(Player p, GLfloat bounds, GLfloat sliceWidth, vector<vector<GLfloat>> distances);
+    void show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances);
     void actions(Hud hud);
     void see(Player p);
 };
 
-void Sprite::show(Player p, GLfloat bounds, GLfloat sliceWidth, vector<vector<GLfloat>> distances)
+void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances)
 {
     // Render sprite on screen
     vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
@@ -639,19 +644,30 @@ void Sprite::show(Player p, GLfloat bounds, GLfloat sliceWidth, vector<vector<GL
     }
 
     visible = false;
-    if (theta < p.FOV / 2 && theta > -p.FOV / 2 && dist > 5  && distances[0][(int)(p.rayCount * (p.FOV / 2 + theta) / p.FOV)] > dist)
+    glPointSize(1);
+    GLfloat width = shape[0] * 6 * 64 / dist;
+    GLfloat height = shape[1] * 6 * 64 / dist;
+    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2;
+    for(int i = x; i < x + width; i++)
     {
-        glColor3f(0, 1, 0);
-        glPointSize(3 * 320 / dist);
-        glBegin(GL_POINTS);
-        glVertex2d(1.5 * bounds - sin(theta * PI / 180) * bounds, bounds / 2);
-        glEnd();
-        glPointSize(1);
-        visible = true;
+        for(int j = y; j < y + height; j++)
+        {
+            if (theta < p.FOV / 2 && theta > -p.FOV / 2 && dist > 5  && distances[0][(int)(p.rayCount * (p.FOV / 2 + theta) / p.FOV)] > dist)
+            {
+                if(bounds < i && i < 2 * bounds && bounds / 2 -maxHeight / 2 < j && j < bounds / 2 + maxHeight / 2)
+                {
+                    glBegin(GL_POINTS);
+                    glColor3f(0, 1, 0);
+                    glVertex2d(i, j);
+                    glEnd();
+                    visible = true;
+                }
+            }
+        }
     }
 
     // Draw sprite on the mini-map
-    glColor3f(1, 1, 0);
+    glColor3f(0, 1, 0);
     glPointSize(10);
     glBegin(GL_POINTS);
     glVertex2i(pos[0], pos[1]);
@@ -675,9 +691,10 @@ class Enemy: public Sprite
 {
     public:
     GLfloat speed;
-    Enemy(vector<GLfloat> pos, GLfloat threshold, GLfloat speed=1)
+    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, GLfloat threshold, GLfloat speed=1)
     {
         this->pos = pos;
+        this->shape = shape;
         this->threshold = threshold;
         this->speed = speed;
         this->proximity = false;
@@ -696,7 +713,7 @@ void Enemy::actions(Player p, Map m)
         {
             dx /= dist;
             dy /= dist;
-            cout<<dy<<" "<<m.walls[pos[0] / m.blockSize][(pos[1] + dy * offset) / m.blockSize]<<endl;
+//            cout<<dy<<" "<<m.walls[pos[0] / m.blockSize][(pos[1] + dy * offset) / m.blockSize]<<endl;
             if(m.walls[(pos[0] + dx *offset) / m.blockSize][pos[1] / m.blockSize] == 0)
             {
                 pos[0] += dx * speed;

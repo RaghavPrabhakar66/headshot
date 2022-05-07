@@ -19,8 +19,8 @@ GLfloat blockSize = 64;
 // Game Objects
 vector<vector<GLint>> walls{
     {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 1, 1},
+    {1, 0, 0, 1, 0, 1, 0, 1},
     {1, 1, 1, 1, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
@@ -29,8 +29,8 @@ vector<vector<GLint>> walls{
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, walls, blockSize);
-Sprite s1(vector<GLfloat>{100, 300}, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
-Enemy e1(vector<GLfloat>{300, 100}, 60, 0.5);
+Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{3, 3}, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{3, 6}, 60, 0.5);
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1};
@@ -109,13 +109,13 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
     for (int i = 0; i < sprites.size(); i++)
     {
         sprites[i].see(p);
-        sprites[i].show(p, bounds, sliceWidth, d);
+        sprites[i].show(p, bounds, maxHeight, d);
         sprites[i].actions(hud);
     }
     for (int i = 0; i < enemies.size(); i++)
     {
         enemies[i].see(p);
-        enemies[i].show(p, bounds, sliceWidth, d);
+        enemies[i].show(p, bounds, maxHeight, d);
         enemies[i].actions(p, m);
     }
 }
@@ -125,7 +125,6 @@ void display()
 {
     p.actions(keybuffer, mousebuffer, bounds, m);
     glClear(GL_COLOR_BUFFER_BIT);
-    //    p.collisions(sprites)
     m.show();
     drawScene(p.see(m));
     p.show();
@@ -153,7 +152,6 @@ void mouse(int x, int y)
 void mouseKeys(int button, int state, int x, int y)
 {
     mousebuffer[button] = state;
-    cout<<button<<" "<<state<<endl;
 }
 
 void timer(GLint lassi)
