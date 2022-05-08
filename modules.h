@@ -603,6 +603,7 @@ public:
     vector<GLfloat> pos;
     vector<GLfloat> shape;
     vector<GLfloat> texture;
+    vector<GLfloat> texture_alpha;
     string dialogue;
 
     GLfloat threshold;
@@ -610,11 +611,12 @@ public:
     bool visible;
 
     Sprite() {}
-    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, string dialogue)
+    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, vector<GLfloat> texture_alpha, GLfloat threshold, string dialogue)
     {
         this->pos = pos;
         this->shape = shape;
         this->texture = texture;
+        this->texture_alpha = texture_alpha;
         this->threshold = threshold;
         this->proximity = false;
         this->dialogue = dialogue;
@@ -625,7 +627,7 @@ public:
     void see(Player p);
 };
 
-void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size = 32)
+void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size = 128)
 {
     // Render sprite on screen
     vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
@@ -664,7 +666,7 @@ void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLf
                     r = texture[c];
                     g = texture[c + 1];
                     b = texture[c + 2];
-                    if(!(r == 64 && g == 255 && b == 20))
+                    if(!(r == texture_alpha[0] && g == texture_alpha[1] && b == texture_alpha[2]))
                     {
                         glBegin(GL_POINTS);
                         glColor3ub(r, g, b);
@@ -704,11 +706,12 @@ class Enemy: public Sprite
 {
     public:
     GLfloat speed;
-    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, GLfloat speed = 1)
+    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, vector<GLfloat> texture_alpha, GLfloat threshold, GLfloat speed = 1)
     {
         this->pos = pos;
         this->shape = shape;
         this->texture = texture;
+        this->texture_alpha = texture_alpha;
         this->threshold = threshold;
         this->speed = speed;
         this->proximity = false;

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1651931607 source:d:\homework\computer graphics\opengl-project\main.cpp
+1652008001 source:d:\homework\computer graphics\opengl-project\main.cpp
 	<iostream>
 	<GL/glut.h>
 	<math.h>
@@ -341,10 +341,10 @@
 1512590989 c:\mingw\include\math.h
 	<_mingw.h>
 
-1651931579 d:\homework\computer graphics\opengl-project\modules.h
+1652004375 d:\homework\computer graphics\opengl-project\modules.h
 	<iostream>
 	<math.h>
 	<bits/stdc++.h>
 
-1651932002 d:\homework\computer graphics\opengl-project\textures.h
+1652008552 d:\homework\computer graphics\opengl-project\textures.h
 

@@ -14,7 +14,7 @@ GLfloat playerSpeed = 1;
 GLfloat FOV = 60;
 vector<GLfloat> mappos{0, 0};
 GLfloat blockSize = 64;
-
+string text = "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...";
 
 // Game Objects
 vector<vector<GLint>> walls{
@@ -29,11 +29,12 @@ vector<vector<GLint>> walls{
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, walls, blockSize);
-Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{6, 12}, jesus_texture, 30, "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{6, 6}, hand_texture, 60, 0.5);
+Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, text);
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0}, 120, 0.5);
+Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0}, 120, 0.5);
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
-vector<Enemy> enemies{e1};
+vector<Enemy> enemies{e1, e2};
 
 // Input buffer
 bool keybuffer[256] = {0};
@@ -115,7 +116,7 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
     for (int i = 0; i < enemies.size(); i++)
     {
         enemies[i].see(p);
-        enemies[i].show(p, bounds, maxHeight, d);
+        enemies[i].show(p, bounds, maxHeight, d, 128);
         enemies[i].actions(p, m);
     }
 }
