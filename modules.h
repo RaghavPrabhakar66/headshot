@@ -344,6 +344,11 @@ void Hud::displayDialogue(string dialogue, GLint maxLength = 60, GLfloat offset 
     }
 }
 
+void drawGun()
+{
+    // gun funnel
+}
+
 void Hud::show()
 {
     // height = bounds, width = 2 *bounds
@@ -388,8 +393,6 @@ void Hud::show()
     glVertex2f(1.5 * bounds, bounds);
     glVertex2f(bounds, bounds);
     glEnd();
-
-    loadTexture
 
     // stats
     // face
