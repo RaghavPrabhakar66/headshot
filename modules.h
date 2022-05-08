@@ -307,6 +307,7 @@ vector<GLfloat> Ray::cast(Map m)
 void Ray::show()
 {
     glBegin(GL_LINES);
+    glColor3b(255, 255, 0);
     glVertex2f(pos[0], pos[1]);
     glVertex2f(pos[0] + dir[0], pos[1] + dir[1]);
     glEnd();
@@ -317,42 +318,39 @@ class Hud
 public:
     GLfloat bounds;
     GLfloat height;
+    GLint timer;
+    string text;
 
     Hud(GLfloat bounds, GLfloat height)
     {
         this->bounds = bounds;
         this->height = height;
+        this->text = "";
+        this->timer = 0;
     }
-    void show();
-    void displayDialogue(string dialogue, GLint maxLength, GLfloat offset);
+    void show(GLint maxLength, GLfloat offset);
+    void displayDialogue(string text);
 };
 
-void Hud::displayDialogue(string dialogue, GLint maxLength = 60, GLfloat offset = 20)
+void Hud::displayDialogue(string text)
 {
-    glColor3ub(0, 0, 0);
-    for (int j = 0; j < (dialogue.length() / maxLength) + 1; j++)
-    {
-        glRasterPos2f(bounds + offset, ((bounds / 2 - height / 2) - (j + 1) * 20));
-        for (int i = 0; i < maxLength; i++)
-        {
-            if (dialogue[(j * maxLength) + i] == '\0')
-            {
-                break;
-            }
-            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, dialogue[(j * maxLength) + i]);
-        }
-    }
+    this->text = text;
+    this->timer = 50;
 }
 
+<<<<<<< HEAD
 void drawGun()
 {
     // gun funnel
 }
 
 void Hud::show()
+=======
+void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
+>>>>>>> 0646c99374d092666f1e0cd218cc81e5a497d043
 {
     // height = bounds, width = 2 *bounds
-    //  crosshair
+    // crosshair
     glLineWidth(2);
     glBegin(GL_LINES);
     glColor3f(0, 1, 0);
@@ -364,28 +362,48 @@ void Hud::show()
     glEnd();
     glLineWidth(1);
 
-    // lower hud rectangle
-    glBegin(GL_QUADS);
-    glColor3ub(223, 54, 45);
-    glVertex2f(bounds, 0);
-    glVertex2f(bounds * 2, 0);
-    glVertex2f(bounds * 2, bounds / 2 - height / 2);
-    glVertex2f(bounds, bounds / 2 - height / 2);
-    glEnd();
+//    cout<<textbox<<endl;
 
-    // lower hud rectangle boundar
-    glLineWidth(4);
-    glBegin(GL_LINE_LOOP);
-    glColor3ub(0, 0, 0);
-    glVertex2f(bounds + 2, 2);
-    glVertex2f(bounds * 2 - 2, 2);
-    glVertex2f(bounds * 2 - 2, bounds / 2 - height / 2 - 2);
-    glVertex2f(bounds + 2, bounds / 2 - height / 2 - 2);
-    glEnd();
-    glLineWidth(1);
+    if(timer)
+    {
+        // textbox
+        cout<<"why have you forsaken me";
+        glBegin(GL_QUADS);
+        glColor3ub(223, 54, 45);
+        glVertex2f(bounds, 0);
+        glVertex2f(bounds * 2, 0);
+        glVertex2f(bounds * 2, bounds / 2 - height / 2);
+        glVertex2f(bounds, bounds / 2 - height / 2);
+        glEnd();
+
+        // textbox boundary
+        glLineWidth(4);
+        glBegin(GL_LINE_LOOP);
+        glColor3ub(0, 0, 0);
+        glVertex2f(bounds + 2, 2);
+        glVertex2f(bounds * 2 - 2, 2);
+        glVertex2f(bounds * 2 - 2, bounds / 2 - height / 2 - 2);
+        glVertex2f(bounds + 2, bounds / 2 - height / 2 - 2);
+        glEnd();
+
+        //text
+        glColor3ub(0, 0, 0);
+        for (int j = 0; j < (text.length() / maxLength) + 1; j++)
+        {
+            glRasterPos2f(bounds + offset, ((bounds / 2 - height / 2) - (j + 1) * 20));
+            for (int i = 0; i < maxLength; i++)
+            {
+                if (text[(j * maxLength) + i] == '\0')
+                {
+                    break;
+                }
+                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[(j * maxLength) + i]);
+            }
+        }
+        timer--;
+    }
 
     // equipped weapon
-    glLineWidth(10);
     glBegin(GL_LINE_LOOP);
     glColor3ub(255, 255, 0);
     glVertex2f(bounds, bounds / 2 + height / 2);
@@ -397,69 +415,8 @@ void Hud::show()
     // stats
     // face
     // sexy design
-}
-
-class Sprite
-{
-public:
-    vector<GLfloat> pos;
-    GLint type;
-    GLint state;
-    GLfloat threshold;
-
-    Sprite() {}
-    Sprite(vector<GLfloat> pos, GLfloat threshold, GLint type)
-    {
-        this->pos = pos;
-        this->threshold = threshold;
-        this->state = 0;
-        this->type = 0;
-    }
-    void show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth);
-    void actions(Hud hud);
-};
-
-void Sprite::show(vector<GLfloat> playerPos, GLfloat playerAngle, GLfloat bounds, GLfloat sliceWidth)
-{
-    // Render sprite on screen
-    vector<GLfloat> relativePos{pos[0] - playerPos[0], pos[1] - playerPos[1]};
-    GLfloat dist = sqrt(relativePos[0] * relativePos[0] + relativePos[1] * relativePos[1]);
-    GLfloat theta = atan(relativePos[1] / relativePos[0]) / PI * 180;
-    if (relativePos[0] < 0)
-    {
-        theta += 180;
-    }
-    theta -= playerAngle;
-    cout << theta << "  (" << relativePos[0] << ", " << relativePos[1] << ") " << endl;
-
-    if (theta < 30 && theta > -30)
-    {
-        glColor3f(1, 1, 0);
-        glPointSize(10 * 320 / dist);
-        glBegin(GL_POINTS);
-        glVertex2d(1.5 * bounds - sin(theta * PI / 180) * bounds, bounds / 2);
-        glEnd();
-        glPointSize(1);
-    }
-
-    // Draw sprite on the mini-map
-    glColor3f(1, 1, 0);
-    glPointSize(10);
-    glBegin(GL_POINTS);
-    glVertex2i(pos[0], pos[1]);
-    glEnd();
-    glPointSize(1);
-}
-
-void Sprite::actions(Hud hud)
-{
-    if (type == 0)
-    {
-        if (state == 1)
-        {
-            hud.displayDialogue("Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...");
-        }
-    }
+    glColor3ub(255, 255, 255);
+    glLineWidth(1);
 }
 
 // Player
@@ -513,23 +470,26 @@ public:
         }
     }
     void show();
-    void actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m);
+    void actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m);
     vector<vector<GLfloat>> see(Map m);
-    void proximity(vector<Sprite> spritesBuffer);
 };
 
-void Player::proximity(vector<Sprite> spritesBuffer)
-{
-    for (int i = 0; i < spritesBuffer.size(); i++)
-    {
-        GLfloat dist = sqrt(pow(pos[0] - spritesBuffer[i].pos[0], 2) + pow(pos[1] - spritesBuffer[i].pos[1], 2));
-        spritesBuffer[i].state = (dist < spritesBuffer[i].threshold);
-        cout << dist << " " << spritesBuffer[i].state << endl;
-    }
-}
 
-void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Map m)
+void Player::actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m)
 {
+    // Use action
+//    if(keybuffer['f'])
+//    {
+//
+//    }
+
+    // Mouse Left Click
+    if(mousebuffer[0] == 0)
+    {
+        weapon.attack = true;
+        mousebuffer[0] = 1;
+    }
+
     // Weapon switching
     if (keybuffer['1'])
     {
@@ -584,8 +544,8 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
     }
 
     // Real rotation
-    angle += mousebuffer[0];
-    mousebuffer[0] = 0;
+    angle += mousebuffer[5];
+    mousebuffer[5] = 0;
     if (angle >= 360)
     {
         angle -= 360;
@@ -616,9 +576,12 @@ void Player::actions(bool keybuffer[], GLfloat mousebuffer[], GLfloat bounds, Ma
 }
 void Player::show()
 {
+    glPointSize(4);
+    glColor3f(0.2, 0.2, 1);
     glBegin(GL_POINTS);
     glVertex2f(pos[0], pos[1]);
     glEnd();
+
 }
 
 vector<vector<GLfloat>> Player::see(Map m)
@@ -629,11 +592,9 @@ vector<vector<GLfloat>> Player::see(Map m)
     for (int i = 0; i < this->rayCount; i++)
     {
         res = rays[i].cast(m);
+        glColor3f(1, 1, 0);
         glBegin(GL_LINES);
         glVertex2f(pos[0], pos[1]);
-        glVertex2f(res[0], res[1]);
-        glEnd();
-        glBegin(GL_POINTS);
         glVertex2f(res[0], res[1]);
         glEnd();
 
@@ -643,4 +604,148 @@ vector<vector<GLfloat>> Player::see(Map m)
         distances[3].push_back(res[1]);
     }
     return distances;
+}
+
+class Sprite
+{
+public:
+    vector<GLfloat> pos;
+    vector<GLfloat> shape;
+    vector<GLfloat> texture;
+    string dialogue;
+
+    GLfloat threshold;
+    bool proximity;
+    bool visible;
+
+    Sprite() {}
+    Sprite(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, string dialogue)
+    {
+        this->pos = pos;
+        this->shape = shape;
+        this->texture = texture;
+        this->threshold = threshold;
+        this->proximity = false;
+        this->dialogue = dialogue;
+        this->visible = false;
+    }
+    void show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size);
+    void actions(Hud hud);
+    void see(Player p);
+};
+
+void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size = 32)
+{
+    // Render sprite on screen
+    vector<GLfloat> relativePos{pos[0] - p.pos[0], pos[1] - p.pos[1]};
+    GLfloat dist = sqrt(relativePos[0] * relativePos[0] + relativePos[1] * relativePos[1]);
+    GLfloat theta = atan(relativePos[1] / relativePos[0]) / PI * 180;
+    if (relativePos[0] < 0)
+    {
+        theta += 180;
+    }
+    theta -= p.angle;
+    if (theta < -180)
+    {
+        theta += 360;
+    }
+
+    if (theta >= 180)
+    {
+        theta -= 360;
+    }
+
+    visible = false;
+    glPointSize(1);
+    GLfloat width = shape[0] * 6 * 64 / dist, height = shape[1] * 6 * 64 / dist;
+    GLfloat x = 1.5 * bounds - sin(theta * PI / 180) * bounds - width / 2, y = bounds / 2 - height / 2, c, r, g, b;
+    vector<GLfloat> t{0, 0}, tstep{texture_size / (width + 1), texture_size / (height + 1)};
+    for(int i = x + width; i > x; i--)
+    {
+        t[1] = 0;
+        for(int j = y + height; j > y; j--)
+        {
+            if (theta < p.FOV / 2 && theta > -p.FOV / 2 && dist > 5  && distances[0][(int)(p.rayCount * (p.FOV / 2 + theta) / p.FOV)] > dist)
+            {
+                if(bounds < i && i < 2 * bounds && bounds / 2 -maxHeight / 2 < j && j < bounds / 2 + maxHeight / 2)
+                {
+                    c = (int(t[1]) * texture_size + int(t[0])) * 3;
+                    r = texture[c];
+                    g = texture[c + 1];
+                    b = texture[c + 2];
+                    if(!(r == 64 && g == 255 && b == 20))
+                    {
+                        glBegin(GL_POINTS);
+                        glColor3ub(r, g, b);
+                        glVertex2d(i, j);
+                        glEnd();
+                        visible = true;
+                    }
+                }
+            }
+            t[1] += tstep[1];
+        }
+        t[0] += tstep[0];
+    }
+
+    // Draw sprite on the mini-map
+    glColor3f(0, 1, 0);
+    glPointSize(10);
+    glBegin(GL_POINTS);
+    glVertex2i(pos[0], pos[1]);
+    glEnd();
+    glPointSize(1);
+}
+void Sprite::actions(Hud hud)
+{
+    if (proximity && visible)
+    {
+        hud.displayDialogue(dialogue);
+    }
+}
+void Sprite::see(Player p)
+{
+    GLfloat dist = sqrt(pow(p.pos[0] - pos[0], 2) + pow(p.pos[1] - pos[1], 2));
+    proximity = (dist < threshold);
+}
+
+class Enemy: public Sprite
+{
+    public:
+    GLfloat speed;
+    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, GLfloat threshold, GLfloat speed = 1)
+    {
+        this->pos = pos;
+        this->shape = shape;
+        this->texture = texture;
+        this->threshold = threshold;
+        this->speed = speed;
+        this->proximity = false;
+    }
+    void actions(Player p, Map m);
+};
+
+void Enemy::actions(Player p, Map m)
+{
+    if(proximity)
+    {
+        GLfloat dx = p.pos[0] - pos[0];
+        GLfloat dy = p.pos[1] - pos[1];
+        GLfloat dist = sqrt(dx* dx + dy * dy), offset = 10;
+        if(dist)
+        {
+            dx /= dist;
+            dy /= dist;
+//            cout<<dy<<" "<<m.walls[pos[0] / m.blockSize][(pos[1] + dy * offset) / m.blockSize]<<endl;
+            if(m.walls[(pos[0] + dx *offset) / m.blockSize][pos[1] / m.blockSize] == 0)
+            {
+                pos[0] += dx * speed;
+            }
+            if(m.walls[pos[0] / m.blockSize][(pos[1] + dy * offset) / m.blockSize] == 0)
+            {
+                pos[1] += dy * speed;
+            }
+        }
+
+    }
 }
