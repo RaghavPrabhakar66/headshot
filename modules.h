@@ -338,16 +338,7 @@ void Hud::displayDialogue(string text)
     this->timer = 50;
 }
 
-<<<<<<< HEAD
-void drawGun()
-{
-    // gun funnel
-}
-
-void Hud::show()
-=======
 void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
->>>>>>> 0646c99374d092666f1e0cd218cc81e5a497d043
 {
     // height = bounds, width = 2 *bounds
     // crosshair
