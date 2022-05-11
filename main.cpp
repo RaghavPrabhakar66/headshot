@@ -30,14 +30,14 @@ vector<vector<GLint>> walls{
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, walls, blockSize);
 Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, text);
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0}, 120, 0.5);
-Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0}, 120, 0.5);
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0});
+Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0});
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1, e2};
 
 // Input buffer
-bool keybuffer[256] = {0};
+bool keybuffer[256] = {0}, specialkeybuffer[256];
 GLint mousebuffer[] = {0, 0, 1, 1, 1, 1, 1}, mouseLoc[] = {bounds, bounds / 2};
 
 
@@ -124,14 +124,15 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
 // Event loop
 void display()
 {
-    p.actions(keybuffer, mousebuffer, bounds, m);
+    p.actions(keybuffer, specialkeybuffer, mousebuffer, bounds, m);
     glClear(GL_COLOR_BUFFER_BIT);
     m.show();
     drawScene(p.see(m));
     p.show();
-    hud.show();
+    hud.show(p);
     p.weapon.show(bounds, 320);
     glutSwapBuffers();
+    cout<<p.health<<endl;
 }
 
 // Mechanical functions
@@ -142,6 +143,14 @@ void keyUp(unsigned char c, int x, int y)
 void keyDown(unsigned char c, int x, int y)
 {
     keybuffer[c] = true;
+}
+void specialDown(int c, int x, int y)
+{
+    specialkeybuffer[c] = true;
+}
+void specialUp(int c, int x, int y)
+{
+    specialkeybuffer[c] = false;
 }
 void mouse(int x, int y)
 {
@@ -164,13 +173,29 @@ void timer(GLint lassi)
 void reshape(int w, int h)
 {
     if(h == 0)
+    {
 		h = 1;
-
+    }
 	glLoadIdentity();
+	GLfloat scale = float(h) / bounds;
     bounds = h;
 	sliceWidth = bounds / p.rayCount;
 	m.blockSize = bounds / 8;
 	hud.bounds = bounds;
+	p.pos[0] *= scale;
+	p.pos[1] *= scale;
+
+	for(int i = 0; i < sprites.size(); i++)
+    {
+        sprites[i].pos[0] *= scale;
+        sprites[i].pos[1] *= scale;
+    }
+    for(int i = 0; i < enemies.size(); i++)
+    {
+        enemies[i].pos[0] *= scale;
+        enemies[i].pos[1] *= scale;
+    }
+
     glutReshapeWindow(2 * bounds, bounds);
 	glViewport(0, 0, bounds * 2, bounds);
 	gluOrtho2D(0, 2 * bounds, 0, bounds);
@@ -197,6 +222,8 @@ int main(GLint argc, char **argv)
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyDown);                      //this functions handle if a key is pressed or not
     glutKeyboardUpFunc(keyUp);                      //this functions handle if a key is pressed or not
+    glutSpecialFunc(specialDown);
+    glutSpecialUpFunc(specialUp);
     glutPassiveMotionFunc(mouse);                   //mouse movement
     glutMouseFunc(mouseKeys);                       //records mouse keys
     glutSetCursor(GLUT_CURSOR_DESTROY);             //cursor design

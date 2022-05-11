@@ -44,9 +44,6 @@
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Unit filename="modules.h" />
-		<Unit filename="old_modules.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="textures.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>

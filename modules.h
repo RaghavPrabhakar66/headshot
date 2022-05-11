@@ -6,6 +6,8 @@
 #include <iostream>
 #include <math.h>
 #include <bits/stdc++.h>
+#include <string>
+
 #define PI 3.141592
 
 using namespace std;
@@ -65,12 +67,18 @@ class Weapon
 public:
     GLint name;
     bool attack;
+    GLfloat damage;
+    GLfloat range;
+    GLint ammo;
 
     Weapon() {}
-    Weapon(GLint name)
+    Weapon(GLint name, GLfloat damage, GLfloat range, GLfloat ammo)
     {
         this->name = name;
         this->attack = false;
+        this->damage = damage;
+        this->range = range;
+        this->ammo = ammo;
     }
 
     void show(GLfloat bounds, GLfloat height);
@@ -114,9 +122,10 @@ void Weapon::show(GLfloat bounds, GLfloat height)
     }
     if (name == 1)
     {
-        if (attack)
+        if (attack && ammo)
         {
             drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, pistolfire_texture);
+            ammo--;
             attack = false;
         }
         else
@@ -315,102 +324,6 @@ void Ray::show()
     glEnd();
 }
 
-class Hud
-{
-public:
-    GLfloat bounds;
-    GLfloat height;
-    GLint timer;
-    string text;
-
-    Hud(GLfloat bounds, GLfloat height)
-    {
-        this->bounds = bounds;
-        this->height = height;
-        this->text = "";
-        this->timer = 0;
-    }
-    void show(GLint maxLength, GLfloat offset);
-    void displayDialogue(string text);
-};
-
-void Hud::displayDialogue(string text)
-{
-    this->text = text;
-    this->timer = 50;
-}
-
-void Hud::show(GLint maxLength = 60, GLfloat offset = 20)
-{
-    // height = bounds, width = 2 *bounds
-    // crosshair
-    glLineWidth(2);
-    glBegin(GL_LINES);
-    glColor3f(0, 1, 0);
-    glVertex2f(1.5 * bounds - 10, bounds / 2);
-    glVertex2f(1.5 * bounds + 10, bounds / 2);
-    glColor3f(0, 1, 0);
-    glVertex2f(1.5 * bounds, bounds / 2 - 10);
-    glVertex2f(1.5 * bounds, bounds / 2 + 10);
-    glEnd();
-    glLineWidth(1);
-
-//    cout<<textbox<<endl;
-    if(timer)
-    {
-        // textbox
-        cout<<"why have you forsaken me";
-        glBegin(GL_QUADS);
-        glColor3ub(223, 54, 45);
-        glVertex2f(bounds, 0);
-        glVertex2f(bounds * 2, 0);
-        glVertex2f(bounds * 2, bounds / 2 - height / 2);
-        glVertex2f(bounds, bounds / 2 - height / 2);
-        glEnd();
-
-        // textbox boundary
-        glLineWidth(4);
-        glBegin(GL_LINE_LOOP);
-        glColor3ub(0, 0, 0);
-        glVertex2f(bounds + 2, 2);
-        glVertex2f(bounds * 2 - 2, 2);
-        glVertex2f(bounds * 2 - 2, bounds / 2 - height / 2 - 2);
-        glVertex2f(bounds + 2, bounds / 2 - height / 2 - 2);
-        glEnd();
-
-        //text
-        glColor3ub(0, 0, 0);
-        for (int j = 0; j < (text.length() / maxLength) + 1; j++)
-        {
-            glRasterPos2f(bounds + offset, ((bounds / 2 - height / 2) - (j + 1) * 20));
-            for (int i = 0; i < maxLength; i++)
-            {
-                if (text[(j * maxLength) + i] == '\0')
-                {
-                    break;
-                }
-                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[(j * maxLength) + i]);
-            }
-        }
-        timer--;
-    }
-
-    // equipped weapon
-    glBegin(GL_LINE_LOOP);
-    glColor3ub(255, 255, 0);
-    glVertex2f(bounds, bounds / 2 + height / 2);
-    glVertex2f(1.5 * bounds, bounds / 2 + height / 2);
-    glVertex2f(1.5 * bounds, bounds);
-    glVertex2f(bounds, bounds);
-    glEnd();
-
-    // stats
-    // face
-    // sexy design
-    glColor3ub(255, 255, 255);
-    glLineWidth(1);
-}
-
 // Player
 class Player
 {
@@ -423,16 +336,20 @@ public:
     GLfloat angle;
     GLint rayCount;
     GLfloat step;
+    GLfloat health;
+    GLfloat stamina;
     vector<Ray> rays;
 
     Player() {} // dummy constructor
     Player(vector<GLfloat> pos, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle)
     {
-        weapons = vector<Weapon>{Weapon(0), Weapon(1)};
+        weapons = vector<Weapon>{Weapon(0, 75, 30, 0), Weapon(1, 50, 400, 18)};
         weapon = weapons[0];
 
         this->pos = pos;
         this->speed = speed;
+        this->health = 100;
+        this->stamina = 100;
         this->rayCount = rayCount;
         this->FOV = FOV;
 
@@ -462,18 +379,28 @@ public:
         }
     }
     void show();
-    void actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m);
+    void actions(bool keybuffer[], bool specialkeybuffer[], GLint mousebuffer[], GLfloat bounds, Map m);
     vector<vector<GLfloat>> see(Map m);
 };
 
 
-void Player::actions(bool keybuffer[], GLint mousebuffer[], GLfloat bounds, Map m)
+void Player::actions(bool keybuffer[], bool specialkeybuffer[], GLint mousebuffer[], GLfloat bounds, Map m)
 {
     // Use action
-//    if(keybuffer['f'])
-//    {
-//
-//    }
+    if(specialkeybuffer[112] && stamina > 0)
+    {
+        speed = 1.6;
+        stamina -= 1;
+    }
+    else
+    {
+        speed = 1;
+        if (stamina < 100)
+        {
+            stamina+=0.5;
+        }
+    }
+
 
     // Mouse Left Click
     if(mousebuffer[0] == 0)
@@ -598,6 +525,111 @@ vector<vector<GLfloat>> Player::see(Map m)
     return distances;
 }
 
+class Hud
+{
+public:
+    GLfloat bounds;
+    GLfloat height;
+
+    Hud(GLfloat bounds, GLfloat height)
+    {
+        this->bounds = bounds;
+        this->height = height;
+    }
+    void show(Player p);
+    void displayDialogue(string text, GLint maxLength, GLfloat offset);
+};
+
+void Hud::displayDialogue(string text, GLint maxLength = 60, GLfloat offset = 20)
+{
+    // textbox
+    glBegin(GL_QUADS);
+    glColor3ub(223, 54, 45);
+    glVertex2f(bounds, 0);
+    glVertex2f(bounds * 2, 0);
+    glVertex2f(bounds * 2, bounds / 2 - height / 2);
+    glVertex2f(bounds, bounds / 2 - height / 2);
+    glEnd();
+
+    // textbox boundary
+    glLineWidth(4);
+    glBegin(GL_LINE_LOOP);
+    glColor3ub(0, 0, 0);
+    glVertex2f(bounds + 2, 2);
+    glVertex2f(bounds * 2 - 2, 2);
+    glVertex2f(bounds * 2 - 2, bounds / 2 - height / 2 - 2);
+    glVertex2f(bounds + 2, bounds / 2 - height / 2 - 2);
+    glEnd();
+
+    //text
+    glColor3ub(0, 0, 0);
+    for (int j = 0; j < (text.length() / maxLength) + 1; j++)
+    {
+        glRasterPos2f(bounds + offset, ((bounds / 2 - height / 2) - (j + 1) * 20));
+        for (int i = 0; i < maxLength; i++)
+        {
+            if (text[(j * maxLength) + i] == '\0')
+            {
+                break;
+            }
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[(j * maxLength) + i]);
+        }
+    }
+}
+
+void Hud::show(Player p)
+{
+    // crosshair
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    glColor3f(0, 1, 0);
+    glVertex2f(1.5 * bounds - 10, bounds / 2);
+    glVertex2f(1.5 * bounds + 10, bounds / 2);
+    glColor3f(0, 1, 0);
+    glVertex2f(1.5 * bounds, bounds / 2 - 10);
+    glVertex2f(1.5 * bounds, bounds / 2 + 10);
+    glEnd();
+    glLineWidth(1);
+
+    // equipped weapon
+    glBegin(GL_LINE_LOOP);
+    glColor3ub(255, 255, 0);
+    glVertex2f(bounds, bounds / 2 + height / 2);
+    glVertex2f(1.5 * bounds, bounds / 2 + height / 2);
+    glVertex2f(1.5 * bounds, bounds);
+    glVertex2f(bounds, bounds);
+    glEnd();
+
+    // stats
+    // health
+    glRasterPos2f(1.6 * bounds, bounds - 20);
+    string health   = "Health   :   " + to_string(int(p.health));
+    for(int i = 0; i < health.length(); i++)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, health[i]);
+    }
+    // ammo
+    glRasterPos2f(1.6 * bounds, bounds - 50);
+    string ammo     = "Ammo     :   " + to_string(int(p.weapon.ammo));
+    for(int i = 0; i < ammo.length(); i++)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ammo[i]);
+    }
+    // stamina
+    glRasterPos2f(1.6 * bounds, bounds - 80);
+    string stamina  = "Stamina  :   " + to_string(int(p.stamina));
+    for(int i = 0; i < stamina.length(); i++)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, stamina[i]);
+    }
+
+    // face
+    // sexy design
+    glColor3ub(255, 255, 255);
+    glLineWidth(1);
+}
+
+
 class Sprite
 {
 public:
@@ -624,7 +656,7 @@ public:
         this->visible = false;
     }
     void show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLfloat>> distances, GLint texture_size);
-    void actions(Hud hud);
+    void actions(Hud &hud);
     void see(Player p);
 };
 
@@ -690,7 +722,7 @@ void Sprite::show(Player p, GLfloat bounds, GLfloat maxHeight, vector<vector<GLf
     glEnd();
     glPointSize(1);
 }
-void Sprite::actions(Hud hud)
+void Sprite::actions(Hud &hud)
 {
     if (proximity && visible)
     {
@@ -707,30 +739,34 @@ class Enemy: public Sprite
 {
     public:
     GLfloat speed;
-    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, vector<GLfloat> texture_alpha, GLfloat threshold, GLfloat speed = 1)
+    GLfloat health;
+    GLfloat damage;
+    Enemy(vector<GLfloat> pos, vector<GLfloat> shape, vector<GLfloat> texture, vector<GLfloat> texture_alpha, GLfloat health = 100, GLfloat damage = 25, GLfloat threshold = 120, GLfloat speed = 0.5)
     {
         this->pos = pos;
         this->shape = shape;
         this->texture = texture;
         this->texture_alpha = texture_alpha;
+        this->health = health;
+        this->damage = damage;
         this->threshold = threshold;
         this->speed = speed;
         this->proximity = false;
     }
-    void actions(Player p, Map m);
+    void actions(Player &p, Map m);
 };
 
-void Enemy::actions(Player p, Map m)
+void Enemy::actions(Player &p, Map m)
 {
     if(proximity)
     {
         GLfloat dx = p.pos[0] - pos[0];
         GLfloat dy = p.pos[1] - pos[1];
         GLfloat dist = sqrt(dx* dx + dy * dy), offset = 10;
-        if(dist)
+        dx /= dist;
+        dy /= dist;
+        if(dist > 30)
         {
-            dx /= dist;
-            dy /= dist;
 //            cout<<dy<<" "<<m.walls[pos[0] / m.blockSize][(pos[1] + dy * offset) / m.blockSize]<<endl;
             if(m.walls[(pos[0] + dx *offset) / m.blockSize][pos[1] / m.blockSize] == 0)
             {
@@ -740,6 +776,14 @@ void Enemy::actions(Player p, Map m)
             {
                 pos[1] += dy * speed;
             }
+        }
+        else
+        {
+            p.health -= damage;
+            p.pos[0] += 30 * dx;
+            p.pos[1] += 30 * dy;
+            pos[0] -= 5 * dx;
+            pos[1] -= 5 * dy;
         }
 
     }
