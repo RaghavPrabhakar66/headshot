@@ -5,6 +5,7 @@
 #include "textures.h"
 
 // Parameters
+GLint state = 0;
 GLfloat bounds = 512;
 GLfloat rayCount = 512;
 GLfloat sliceWidth = bounds / rayCount;
@@ -17,21 +18,21 @@ GLfloat blockSize = 64;
 string text = "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...";
 
 // Game Objects
-vector<vector<GLint>> walls{
+vector<vector<GLint>> level1{
     {1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 1, 1},
-    {1, 0, 0, 1, 0, 1, 0, 1},
-    {1, 1, 1, 1, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 2, 1, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1},
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
-Map m(mappos, walls, blockSize);
+Map m(mappos, level1, blockSize);
 Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, text);
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0});
-Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{24, 24}, swole_texture, vector<GLfloat>{0, 0, 0});
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_texture, vector<GLfloat>{0, 0, 0});
+Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_texture, vector<GLfloat>{0, 0, 0});
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1, e2};
@@ -117,22 +118,68 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
     {
         enemies[i].see(p);
         enemies[i].show(p, bounds, maxHeight, d, 128);
-        enemies[i].actions(p, m);
+        enemies[i].actions(p, m, hud);
     }
 }
 
 // Event loop
 void display()
 {
-    p.actions(keybuffer, specialkeybuffer, mousebuffer, bounds, m);
     glClear(GL_COLOR_BUFFER_BIT);
-    m.show();
-    drawScene(p.see(m));
-    p.show();
-    hud.show(p);
-    p.weapon.show(bounds, 320);
+    if(state == 0)
+    {
+        glColor3ub(255, 255, 255);
+        glRasterPos2f(0.95 * bounds, bounds/2);
+        string text = "Headshot";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, text[i]);
+        }
+        glRasterPos2f(0.85 * bounds, bounds/4);
+        text = "press space to continue";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+        }
+        if(keybuffer[' '])
+        {
+            state = 1;
+        }
+    }
+    else if(state == 4)
+    {
+        glColor3ub(255, 255, 255);
+        glRasterPos2f(0.9 * bounds, bounds/2);
+        string text = "Game Over";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, text[i]);
+        }
+        glRasterPos2f(0.85 * bounds, bounds/4);
+        text = "press space to restart";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+        }
+        if(keybuffer[' '])
+        {
+            state = 1;
+        }
+    }
+    else
+    {
+        p.actions(keybuffer, specialkeybuffer, mousebuffer, bounds, m);
+        m.show();
+        drawScene(p.see(m));
+        p.show();
+        p.weapon.show(bounds, 320);
+        hud.show(p);
+        if(p.health <= 0)
+        {
+            state = 4;
+        }
+    }
     glutSwapBuffers();
-    cout<<p.health<<endl;
 }
 
 // Mechanical functions
