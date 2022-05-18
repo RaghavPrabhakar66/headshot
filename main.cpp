@@ -2,7 +2,6 @@
 #include <GL/glut.h>
 #include <math.h>
 #include "modules.h"
-#include "textures.h"
 
 // Parameters
 GLint state = 0;
