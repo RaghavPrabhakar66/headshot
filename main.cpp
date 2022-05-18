@@ -20,9 +20,9 @@ string text = "Hello There! Didn't expect to make it out here alive. This  place
 vector<vector<GLint>> level1{
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1},
@@ -166,7 +166,34 @@ void display()
         }
     }
     else
-    {
+    {   
+        if(mousebuffer[0] == 0)
+        {
+            if (p.weapon.shoot())
+            {
+                for (int i = 0; i < enemies.size(); i++)
+                {
+                    vector<GLfloat> relativeDir {enemies[i].pos[0] - p.pos[0], enemies[i].pos[1] - p.pos[1]};
+                    GLfloat theta = atan(relativeDir[1] / relativeDir[0]) * 180 / PI;
+                        if (relativeDir[0] < 0)
+                        {
+                            theta += 180;
+                        }
+                        // theta -= p.angle;
+                        if (theta < -180)
+                        {
+                            theta += 360;
+                        }
+
+                        if (theta >= 180)
+                        {
+                            theta -= 360;
+                        }
+                    cout << theta << endl;
+                }
+            }
+            mousebuffer[0] = 1;
+        }
         p.actions(keybuffer, specialkeybuffer, mousebuffer, bounds, m);
         m.show();
         drawScene(p.see(m));

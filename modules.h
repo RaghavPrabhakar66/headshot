@@ -51,83 +51,18 @@ class Ray;
 class Hud;
 
 
-class Weapon
-{
-public:
-    GLint name;
-    GLfloat damage;
-    GLfloat range;
-    GLint ammo;
-    GLint cooldown;
-
-    Weapon() {}
-    Weapon(GLint name, GLfloat damage, GLfloat range, GLfloat ammo)
-    {
-        this->name = name;
-        this->damage = damage;
-        this->range = range;
-        this->ammo = ammo;
-        this->cooldown = 0;
-    }
-
-    void show(GLfloat bounds, GLfloat height);
-    void shoot();
-};
-
-void Weapon::shoot()
-{
-    if(ammo && cooldown <= 0)
-    {
-//        attack = false;
-    }
-    if(name == 0)
-    {
-        cooldown = 1;
-    }
-    else if(name == 1)
-    {
-        ammo--;
-        cooldown = 5;
-    }
-    else if(name == 2)
-    {
-        ammo--;
-        cooldown = 22;
-    }
-}
-
-void Weapon::show(GLfloat bounds, GLfloat height)
-{
-    if (name == 0)
-    {
-        //drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, knife_textures[cooldown]);
-
-    }
-    else if (name == 1)
-    {
-        drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, pistol_textures[cooldown]);
-    }
-    else if(name == 2)
-    {
-        if(0 < cooldown && cooldown < 21)
-        {
-            drawSprite(1.5 * bounds + 50, bounds / 2 - height / 2, 107, 118, shotgun_textures[cooldown / 2]);
-        }
-        else
-        {
-            drawSprite(1.5 * bounds, bounds / 2 - height / 2, 220, 150, shotgun_textures[cooldown / 2]);
-        }
-    }
-    if(cooldown > 0)
-    {
-        cooldown--;
-    }
-}
-
 // Map
 class Map
+/*
+    This class is used to store the map data.
+    It is used to render the map aka walls.
+    params:
+        - size: the size of the map
+        - blockSize: the size of each block
+*/
 {
 public:
+    // 
     GLint blockSize;
     vector<vector<GLint>> walls;
     vector<GLint> shape;
@@ -143,6 +78,7 @@ public:
 };
 
 void Map::show()
+
 {
     for (int i = shape[0] - 1; i >= 0; i--)
     {
@@ -169,6 +105,7 @@ void Map::show()
 // Individual raycasts
 class Ray
 {
+    /**/
 public:
     vector<GLfloat> pos;
     vector<GLfloat> dir;
@@ -304,6 +241,8 @@ vector<GLfloat> Ray::cast(Map m)
     }
     return res;
 }
+
+
 void Ray::show()
 {
     glBegin(GL_LINES);
@@ -312,6 +251,83 @@ void Ray::show()
     glVertex2f(pos[0] + dir[0], pos[1] + dir[1]);
     glEnd();
 }
+
+class Weapon
+{
+public:
+    GLint name;
+    GLfloat damage;
+    GLfloat range;
+    GLint ammo;
+    GLint cooldown;
+
+    Weapon() {}
+    Weapon(GLint name, GLfloat damage, GLfloat range, GLfloat ammo)
+    {
+        this->name = name;
+        this->damage = damage;
+        this->range = range;
+        this->ammo = ammo;
+        this->cooldown = 0;
+    }
+
+    void show(GLfloat bounds, GLfloat height);
+    bool shoot();
+};
+
+bool Weapon::shoot()
+{
+    if(ammo && cooldown <= 0)
+    {
+        if(name == 0)
+        {
+            cooldown = 1;
+        }
+        else if(name == 1)
+        {
+            ammo--;
+            cooldown = 5;
+        }
+        else if(name == 2)
+        {
+            ammo--;
+            cooldown = 22;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void Weapon::show(GLfloat bounds, GLfloat height)
+{
+    if (name == 0)
+    {
+        //drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, knife_textures[cooldown]);
+
+    }
+    else if (name == 1)
+    {
+        drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, pistol_textures[cooldown]);
+    }
+    else if(name == 2)
+    {
+        if(0 < cooldown && cooldown < 21)
+        {
+            drawSprite(1.5 * bounds + 50, bounds / 2 - height / 2, 107, 118, shotgun_textures[cooldown / 2]);
+        }
+        else
+        {
+            drawSprite(1.5 * bounds, bounds / 2 - height / 2, 220, 150, shotgun_textures[cooldown / 2]);
+        }
+    }
+    if(cooldown > 0)
+    {
+        cooldown--;
+    }
+}
+
 
 // Player
 class Player
@@ -388,14 +404,6 @@ void Player::actions(bool keybuffer[], bool specialkeybuffer[], GLint mousebuffe
         {
             stamina+=0.5;
         }
-    }
-
-
-    // Mouse Left Click
-    if(mousebuffer[0] == 0)
-    {
-        weapon.shoot();
-        mousebuffer[0] = 1;
     }
 
     // Weapon switching
