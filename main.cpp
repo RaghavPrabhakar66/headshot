@@ -144,9 +144,10 @@ void display()
         {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
         }
-        if(keybuffer[' '])
+        if(keybuffer[' ']  || mousebuffer[0] == 0)
         {
             state = 1;
+            mousebuffer[0] = 1;
         }
     }
     else if(state == 4)
@@ -164,9 +165,10 @@ void display()
         {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
         }
-        if(keybuffer[' '])
+        if(keybuffer[' '] || mousebuffer[0] == 0)
         {
             state = 1;
+            mousebuffer[0] = 1;
         }
     }
     else

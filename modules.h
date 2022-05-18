@@ -607,15 +607,6 @@ void Hud::show(Player p)
     glEnd();
     glLineWidth(1);
 
-    // equipped weapon
-    glBegin(GL_LINE_LOOP);
-    glColor3ub(255, 255, 0);
-    glVertex2f(bounds, bounds / 2 + height / 2);
-    glVertex2f(1.5 * bounds, bounds / 2 + height / 2);
-    glVertex2f(1.5 * bounds, bounds);
-    glVertex2f(bounds, bounds);
-    glEnd();
-
     // Stats
     // health bar
     glColor3f(1, 0, 0);
@@ -672,7 +663,7 @@ void Hud::show(Player p)
     glEnd();
 
     // ammo
-    glRasterPos2f(1.6 * bounds, 50);
+    glRasterPos2f(1.6 * bounds, bounds - 65);
     string ammo     = "Ammo     :   " + to_string(int(p.weapon.ammo));
     for(int i = 0; i < ammo.length(); i++)
     {
