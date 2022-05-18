@@ -1,10 +1,9 @@
 # depslib dependency file v1.0
-1652866608 source:d:\homework\computer graphics\opengl-project\main.cpp
+1652900651 source:d:\homework\computer graphics\opengl-project\main.cpp
 	<iostream>
 	<GL/glut.h>
 	<math.h>
 	"modules.h"
-	"textures.h"
 
 1426329928 c:\mingw\include\gl\glut.h
 	"freeglut_std.h"
@@ -341,11 +340,12 @@
 1512590989 c:\mingw\include\math.h
 	<_mingw.h>
 
-1652869840 d:\homework\computer graphics\opengl-project\modules.h
+1652900923 d:\homework\computer graphics\opengl-project\modules.h
+	"textures.h"
 	<iostream>
 	<math.h>
-	<bits/stdc++.h>
 	<string>
 
-1652801293 d:\homework\computer graphics\opengl-project\textures.h
+1652894804 d:\homework\computer graphics\opengl-project\textures.h
+	<bits/stdc++.h>
 

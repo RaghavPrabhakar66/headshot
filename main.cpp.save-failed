@@ -30,8 +30,8 @@ vector<vector<GLint>> level1{
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, level1, blockSize);
 Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, text);
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
-Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_texture, vector<GLfloat>{0, 0, 0});
+Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_texture, vector<GLfloat>{0, 0, 0});
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
 vector<Enemy> enemies{e1, e2};
@@ -199,7 +199,6 @@ void display()
                         if(p.angle > theta - phi && p.angle < theta + phi && dist < p.weapon.range)
                         {
                             enemies[i].health -= p.weapon.damage;
-                            cout<<"\nhit";
                         }
                     }
                 }
