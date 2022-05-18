@@ -348,7 +348,7 @@ public:
     Player() {} // dummy constructor
     Player(vector<GLfloat> pos, GLfloat speed, const GLint rayCount, GLfloat FOV, GLfloat angle)
     {
-        weapons = vector<Weapon>{Weapon(0, 75, 64, 1), Weapon(1, 50, 400, 18), Weapon(2, 30, 200, 10)};
+        weapons = vector<Weapon>{Weapon(0, 75, 64, 1), Weapon(1, 30, 400, 18), Weapon(2, 50, 200, 10)};
         weapon = weapons[0];
 
         this->pos = pos;

@@ -20,9 +20,9 @@ string text = "Hello There! Didn't expect to make it out here alive. This  place
 vector<vector<GLint>> level1{
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1},
@@ -113,14 +113,18 @@ void drawScene(vector<vector<GLfloat>> d, GLint texture_size = 32)
         sprites[i].show(p, bounds, maxHeight, d, 128);
         sprites[i].actions(hud);
     }
-    for (int i = 0; i < enemies.size(); i++)
+    for (int i = 0; i < enemies.size();)
     {
         enemies[i].see(p);
         enemies[i].show(p, bounds, maxHeight, d, 128);
         enemies[i].actions(p, m, hud);
         if(enemies[i].health <= 0)
         {
-            cout<<"ded\n";
+            enemies.erase(enemies.begin() + i);
+        }
+        else
+        {
+            i++;
         }
     }
 }
@@ -171,6 +175,26 @@ void display()
             mousebuffer[0] = 1;
         }
     }
+    else if(state == 5)
+    {
+        glColor3ub(255, 255, 255);
+        glRasterPos2f(0.9 * bounds, bounds/2);
+        string text = "Victory!";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, text[i]);
+        }
+        glRasterPos2f(0.85 * bounds, bounds/4);
+        text = "press space to restart";
+        for(int i = 0; i < text.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+        }
+        if(keybuffer[' '])
+        {
+            state = 1;
+        }
+    }
     else
     {
         if(mousebuffer[0] == 0)
@@ -201,7 +225,6 @@ void display()
                         if(p.angle > theta - phi && p.angle < theta + phi && dist < p.weapon.range)
                         {
                             enemies[i].health -= p.weapon.damage;
-                            cout<<"\nhit";
                         }
                     }
                 }
@@ -217,6 +240,10 @@ void display()
         if(p.health <= 0)
         {
             state = 4;
+        }
+        if(enemies.size() == 0)
+        {
+            state = 5;
         }
     }
     glutSwapBuffers();
