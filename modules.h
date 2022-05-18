@@ -143,29 +143,30 @@ void Weapon::shoot()
 {
     if(ammo && cooldown <= 0)
     {
-//        attack = false;
+
+        if(name == 0)
+        {
+            cooldown = 1;
+        }
+        else if(name == 1)
+        {
+            ammo--;
+            cooldown = 5;
+        }
+        else if(name == 2)
+        {
+            ammo--;
+            cooldown = 22;
+        }
     }
-    if(name == 0)
-    {
-        cooldown = 1;
-    }
-    else if(name == 1)
-    {
-        ammo--;
-        cooldown = 5;
-    }
-    else if(name == 2)
-    {
-        ammo--;
-        cooldown = 22;
-    }
+
 }
 
 void Weapon::show(GLfloat bounds, GLfloat height)
 {
     if (name == 0)
     {
-        drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, knife_textures[cooldown]);
+        drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, pistol_textures[cooldown]);
 
     }
     else if (name == 1)
