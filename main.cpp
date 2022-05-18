@@ -5,6 +5,7 @@
 
 // Parameters
 GLint state = 0;
+GLfloat timeRem = 10;
 GLfloat bounds = 512;
 GLfloat rayCount = 512;
 GLfloat sliceWidth = bounds / rayCount;
@@ -198,7 +199,7 @@ void display()
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
         }
         if(keybuffer[' ']  || mousebuffer[0] == 0)
-        {   
+        {
             mousebuffer[0] = 1;
             state = 1;
 
@@ -213,6 +214,26 @@ void display()
     }
     else
     {
+        // Timer show
+        if(timeRem > 0)
+        {
+            timeRem-=0.02;
+        }
+        else
+        {
+            timeRem = 10;
+            state++;
+            p.weapon = p.weapons[state - 1];
+        }
+        glColor3f(1, 0, 0);
+        glRasterPos2f(1.05 * bounds, bounds - 20);
+        string countdown  = "Next weapon in: " + to_string(int(timeRem)) + " s";
+        for(int i = 0; i < countdown.length(); i++)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, countdown[i]);
+        }
+
+        // Shoot weapon
         if(mousebuffer[0] == 0)
         {
             if (p.weapon.shoot())
