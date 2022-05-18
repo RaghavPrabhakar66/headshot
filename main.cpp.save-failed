@@ -199,7 +199,6 @@ void display()
                         if(p.angle > theta - phi && p.angle < theta + phi && dist < p.weapon.range)
                         {
                             enemies[i].health -= p.weapon.damage;
-                            cout<<"\nhit";
                         }
                     }
                 }
