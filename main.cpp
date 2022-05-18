@@ -14,13 +14,13 @@ GLfloat playerSpeed = 1;
 GLfloat FOV = 60;
 vector<GLfloat> mappos{0, 0};
 GLfloat blockSize = 64;
-string text = "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...";
+string dialouge = "Hello There! Didn't expect to make it out here alive. This  place is crawling with monsters. No one can make it past...";
 
 // Game Objects
 vector<vector<GLint>> level1{
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 0, 0, 1},
+    {1, 0, 1, 1, 1, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
@@ -29,7 +29,7 @@ vector<vector<GLint>> level1{
 };
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, level1, blockSize);
-Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, text);
+Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
 Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
 Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
 Hud hud(bounds, maxHeight);
@@ -148,10 +148,9 @@ void display()
         {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
         }
-        if(keybuffer[' ']  || mousebuffer[0] == 0)
+        if(keybuffer[' '])
         {
             state = 1;
-            mousebuffer[0] = 1;
         }
     }
     else if(state == 4)
@@ -173,6 +172,14 @@ void display()
         {
             state = 1;
             mousebuffer[0] = 1;
+
+            p = Player(playerpos, playerSpeed, rayCount, FOV, 90);
+            m = Map(mappos, level1, blockSize);
+            s1 = Sprite(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
+            e1 = Enemy(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e2 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            sprites = vector<Sprite>{s1};
+            enemies = vector<Enemy>{e1, e2};
         }
     }
     else if(state == 5)
@@ -190,9 +197,18 @@ void display()
         {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
         }
-        if(keybuffer[' '])
-        {
+        if(keybuffer[' ']  || mousebuffer[0] == 0)
+        {   
+            mousebuffer[0] = 1;
             state = 1;
+
+            p = Player(playerpos, playerSpeed, rayCount, FOV, 90);
+            m = Map(mappos, level1, blockSize);
+            s1 = Sprite(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
+            e1 = Enemy(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e2 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            sprites = vector<Sprite>{s1};
+            enemies = vector<Enemy>{e1, e2};
         }
     }
     else
@@ -340,7 +356,7 @@ int main(GLint argc, char **argv)
     glutSpecialUpFunc(specialUp);
     glutPassiveMotionFunc(mouse);                   //mouse movement
     glutMouseFunc(mouseKeys);                       //records mouse keys
-    glutSetCursor(GLUT_CURSOR_DESTROY);             //cursor design
+    glutSetCursor(GLUT_CURSOR_NONE);             //cursor design
     init();
     timer(0);
 
