@@ -5,7 +5,8 @@
 
 // Parameters
 GLint state = 0;
-GLfloat timeRem = 10;
+GLfloat timePerWeapon = 10;
+GLfloat timeRem = timePerWeapon;
 GLfloat bounds = 512;
 GLfloat rayCount = 512;
 GLfloat sliceWidth = bounds / rayCount;
@@ -21,7 +22,7 @@ string dialouge = "Hello There! Didn't expect to make it out here alive. This  p
 vector<vector<GLint>> level1{
     {1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 0, 0, 1},
+    {1, 1, 1, 1, 1, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 1},
@@ -31,11 +32,13 @@ vector<vector<GLint>> level1{
 Player p(playerpos, playerSpeed, rayCount, FOV, 90);
 Map m(mappos, level1, blockSize);
 Sprite s1(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
-Enemy e1(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
-Enemy e2(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+Enemy e1(vector<GLfloat>{200, 200}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+Enemy e2(vector<GLfloat>{350, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+Enemy e3(vector<GLfloat>{400, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+Enemy e4(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
 Hud hud(bounds, maxHeight);
 vector<Sprite> sprites {s1};
-vector<Enemy> enemies{e1, e2};
+vector<Enemy> enemies{e1, e2, e3, e4};
 
 // Input buffer
 bool keybuffer[256] = {0}, specialkeybuffer[256];
@@ -171,16 +174,18 @@ void display()
         }
         if(keybuffer[' '] || mousebuffer[0] == 0)
         {
-            state = 1;
             mousebuffer[0] = 1;
-
+            state = 1;
+            timeRem = timePerWeapon;
             p = Player(playerpos, playerSpeed, rayCount, FOV, 90);
             m = Map(mappos, level1, blockSize);
             s1 = Sprite(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
-            e1 = Enemy(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
-            e2 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e1 = Enemy(vector<GLfloat>{200, 200}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e2 = Enemy(vector<GLfloat>{350, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e3 = Enemy(vector<GLfloat>{400, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e4 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
             sprites = vector<Sprite>{s1};
-            enemies = vector<Enemy>{e1, e2};
+            enemies = vector<Enemy>{e1, e2, e3, e4};
         }
     }
     else if(state == 5)
@@ -202,14 +207,16 @@ void display()
         {
             mousebuffer[0] = 1;
             state = 1;
-
+            timeRem = timePerWeapon;
             p = Player(playerpos, playerSpeed, rayCount, FOV, 90);
             m = Map(mappos, level1, blockSize);
             s1 = Sprite(vector<GLfloat>{100, 300}, vector<GLfloat>{12, 16}, mage_texture, vector<GLfloat>{69, 69, 69}, 30, dialouge);
-            e1 = Enemy(vector<GLfloat>{300, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
-            e2 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e1 = Enemy(vector<GLfloat>{200, 200}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e2 = Enemy(vector<GLfloat>{350, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e3 = Enemy(vector<GLfloat>{400, 300}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
+            e4 = Enemy(vector<GLfloat>{400, 100}, vector<GLfloat>{18, 18}, swole_textures, vector<GLfloat>{255, 255, 255});
             sprites = vector<Sprite>{s1};
-            enemies = vector<Enemy>{e1, e2};
+            enemies = vector<Enemy>{e1, e2, e3, e4};
         }
     }
     else
@@ -221,10 +228,13 @@ void display()
         }
         else
         {
-            timeRem = 10;
+            timeRem = timePerWeapon;
             state++;
-            p.weapon = p.weapons[state - 1];
-        }
+            if(state <= 3)
+            {
+                p.weapon = p.weapons[state - 1];
+            }
+         }
         glColor3f(1, 0, 0);
         glRasterPos2f(1.05 * bounds, bounds - 20);
         string countdown  = "Next weapon in: " + to_string(int(timeRem)) + " s";

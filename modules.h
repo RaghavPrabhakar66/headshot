@@ -281,7 +281,7 @@ bool Weapon::shoot()
     {
         if(name == 0)
         {
-            cooldown = 1;
+            cooldown = 10;
         }
         else if(name == 1)
         {
@@ -304,7 +304,7 @@ void Weapon::show(GLfloat bounds, GLfloat height)
 {
     if (name == 0)
     {
-        //drawSprite(1.6 * bounds, bounds / 2 - height / 2, 128, 128, knife_textures[cooldown]);
+        drawSprite(1.4 * bounds, bounds / 2 - height / 2, 300, 200, melee_textures[cooldown / 2]);
 
     }
     else if (name == 1)
